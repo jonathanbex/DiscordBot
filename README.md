@@ -5,6 +5,9 @@ This is a simple Discord bot implemented in C# using the Discord.Net library.
 ## Features
 
 - **Clear Command**: Allows users to clear a specified number of messages from a channel.
+- **Add Roles Command**: Allows users to add roles to another user.
+- **Guild Info**: Returns list of preformatted guild info.
+- **JHelp**: Returns list of commands
 
 ## Setup
 
