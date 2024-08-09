@@ -53,14 +53,9 @@ namespace BotApplication.Methods
 					if (guildRole == null) continue;
 					rolesToAdd.Add(guildRole);
 				}
-				try
-				{
+
 					if (rolesToAdd.Count > 0) await userToEdit.AddRolesAsync(rolesToAdd);
-				}
-				catch (Exception e)
-				{
-					var HEJ = e;
-				}
+
 				var addedRoleMessage = await context.Channel.SendMessageAsync($"Added roles to user {user}");
 
 				await Task.Delay(TimeSpan.FromSeconds(5));
