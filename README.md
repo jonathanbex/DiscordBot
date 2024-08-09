@@ -1,5 +1,7 @@
 # Discord Bot
 
+BotApplication is the main file, rest are just prepped for webhooks.
+
 This is a simple Discord bot implemented in C# using the Discord.Net library.
 
 ## Features
