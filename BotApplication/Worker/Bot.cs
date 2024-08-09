@@ -17,7 +17,7 @@ namespace BotApplication.Worker
 		{
 			_client = new DiscordSocketClient(new DiscordSocketConfig
 			{
-				GatewayIntents = GatewayIntents.AllUnprivileged | GatewayIntents.MessageContent
+				GatewayIntents = GatewayIntents.Guilds | GatewayIntents.GuildMembers |  GatewayIntents.MessageContent | GatewayIntents.AllUnprivileged
 			});
 			_config = config;
 			_taskQueue = taskQueue;
@@ -64,6 +64,22 @@ namespace BotApplication.Worker
 			else if (command.StartsWith("clear", StringComparison.InvariantCultureIgnoreCase))
 			{
 				await ClearingHelper.Clear(context, command);
+			}
+			else if (command.StartsWith("addRole", StringComparison.InvariantCultureIgnoreCase))
+			{
+				await RoleHelper.AddRoles(context, command);
+			}
+			else if (command.StartsWith("guildInfo", StringComparison.InvariantCultureIgnoreCase))
+			{
+				await GuildInfoHelper.RelayGuildInfo(context, command);
+			}
+			else if (command.StartsWith("JHelp", StringComparison.InvariantCultureIgnoreCase))
+			{
+				await context.Channel.SendMessageAsync("**Available Commands:**\n" +
+						"`!hello` - Greets the user.\n" +
+						"`!clear <x>` - Clears `x` number of messages from the channel.\n" +
+						"`!addRole <role>` - Adds the specified role to a user. For example: `!addRole Fyllhund Guildmaster Member`.\n" +
+						"`!guildInfo` - Returns information about the guild.");
 			}
 
 		});
