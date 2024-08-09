@@ -11,9 +11,9 @@ Log.Logger = new LoggerConfiguration()
 		.WriteTo.File("logs/log-.txt", rollingInterval: RollingInterval.Day) // This will log to a file in a 'logs' folder
 		.CreateLogger();
 
-builder.Host.UseSerilog(); // Use Serilog for loggin
+builder.Host.UseSerilog(); 
 
-// Add services to the container.
+
 builder.Services.AddHttpClient();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -31,8 +31,8 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseRouting(); // Add this line
-									// Add the SignatureValidationMiddleware before MVC or other middlewares
+app.UseRouting(); /
+						
 app.UseMiddleware<SignatureValidationMiddleware>();
 
 app.UseAuthorization();
