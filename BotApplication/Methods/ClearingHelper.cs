@@ -8,7 +8,7 @@ namespace BotApplication.Methods
 	{
 		public static async Task Clear(SocketCommandContext context, string command)
 		{
-			// Example: Check if the user has the "Manage Messages" permission
+
 			if (context.Guild == null || context.User is not SocketGuildUser guildUser)
 			{
 				return;
