@@ -53,8 +53,6 @@ namespace BotApplication.Worker
 		{
 			var context = new SocketCommandContext(_client, message);
 
-			var argPos = 0;
-
 			var command = message.Content.Substring(Prefix.Length).Trim();
 
 			if (command.StartsWith("hello", StringComparison.InvariantCultureIgnoreCase))
