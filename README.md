@@ -48,8 +48,8 @@ This is a simple Discord bot implemented in C# using the Discord.Net library.
 ## Commands
 
 - `!clear [number]`: Deletes the specified number of messages from the channel (up to 100).
-- `!addRoles [string] [string]`: Add specific roles to user. I.e !addRoles Megapap Member Officer.
-- `!guildInfo`: Returns preformatted guild information.
+- `!addRoles [string] [string]`: Add specific roles to user. I.e !addRoles Megapap Member Officer. Use [For space separated roles I.e Guild member]
+- `!addCommand`: adds or updates command with text I.e !addCommand GuildInfo [We are the biggest guild] which will result in !addCommand returns We are the Biggest guild
 - `!JHelp`: Returns list of commands
 ## License
 
