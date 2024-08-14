@@ -104,7 +104,7 @@ namespace BotApplication.Worker
             "`!clear <x>` - Clears `x` number of messages from the channel.\n" +
             "`!addRole <role>` - Adds the specified role to a user. For example: `!addRole Fyllhund Guildmaster Member. use [] for space separate roles i.e [Guild Member]`.\n" +
             "`!addEditCommand <key> [Value]` - Add or updates the existing key for this value to be used later. I.e !addEditcommand GuildInformation [Ensure you have tacos for me].\n" +
-            "`!removeCommand <key>` - Removed command if found. I.e !removeCommand Tacolaco.\n" +
+            "`!removeCommand <key>` - Removes command if found. I.e !removeCommand Tacolaco.\n" +
             "`!jHelp` - Returns a list of commands.\n");
         if (registeredCommands != null && registeredCommands.Any())
         {
