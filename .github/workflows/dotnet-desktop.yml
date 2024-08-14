@@ -24,13 +24,25 @@ jobs:
           
       - name: Restore dependencies
         run: dotnet restore DiscordBot
-        
+
       - name: Build with dotnet
         run: dotnet build DiscordBot --configuration Release /clp:ErrorsOnly
 
       - name: dotnet publish
-        run: dotnet publish BotApplication -c Release -o "${{env.DOTNET_ROOT}}/release" -p:DebugType=None
-
+        run: dotnet publish BotApplication -c Release -r win-x64 -p:PublishSingleFile=true -p:PublishTrimmed=true -p:IncludeAllContentForSelfExtract=true -o "${{env.DOTNET_ROOT}}/release" -p:DebugType=None
+     
+      - name: Create appsettings.json in Release Directory
+        shell: pwsh
+        run: |
+          $jsonContent = @'
+          {
+            "Discord": {
+              "PublicKey": "SET_KEY_HERE"
+            }
+          }
+          '@
+          $jsonContent | Out-File -FilePath "${{env.DOTNET_ROOT}}/release/appsettings.json" -Encoding utf8
+          
       - name: Set Initial Release Date and Generate GUID
         id: set_initial_release_date
         shell: pwsh
