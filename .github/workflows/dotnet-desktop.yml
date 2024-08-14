@@ -43,16 +43,14 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           RELEASE_TAG: ${{ env.RELEASE_TAG }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
         run: |
-          gh release create "$RELEASE_TAG" \
-              --repo="$GITHUB_REPOSITORY" \
-              --title="Release $RELEASE_TAG" \
-              --generate-notes
+          gh release create "$env:RELEASE_TAG" --repo="$env:GITHUB_REPOSITORY" --title="Release $env:RELEASE_TAG" --generate-notes
 
       - name: Upload Release Asset with gh CLI
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           RELEASE_TAG: ${{ env.RELEASE_TAG }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
         run: |
-          gh release upload "$RELEASE_TAG" "${{env.DOTNET_ROOT}}/release"/* \
-              --repo="$GITHUB_REPOSITORY"
+          gh release upload "$env:RELEASE_TAG" "${{env.DOTNET_ROOT}}/release/*" --repo="$env:GITHUB_REPOSITORY"
