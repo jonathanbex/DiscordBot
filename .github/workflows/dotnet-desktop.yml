@@ -7,11 +7,12 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  build_and_release:
     runs-on: windows-latest
     if: "contains(github.event.head_commit.message, '-release')"
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout Repository
+        uses: actions/checkout@v3
         
       - name: Set up .NET Core
         uses: actions/setup-dotnet@v3
@@ -27,21 +28,6 @@ jobs:
       - name: dotnet publish
         run: dotnet publish BotApplication -c Release -o "${{env.DOTNET_ROOT}}/release" -p:DebugType=None
 
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: .net-app
-          path: "${{env.DOTNET_ROOT}}/release"
-      
-  release:
-    runs-on: windows-latest
-    needs: build
-    steps:
-      - name: Download artifact from build job
-        uses: actions/download-artifact@v4
-        with:
-          name: .net-app
-
       - name: Set Initial Release Date and Generate GUID
         id: set_initial_release_date
         shell: pwsh
@@ -56,8 +42,9 @@ jobs:
       - name: Create GitHub Release
         id: create_release
         uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}  # Pass the GITHUB_TOKEN for authentication
           tag_name: "${{ env.RELEASE_TAG }}"
           release_name: "${{ env.RELEASE_NAME }}"
           body: 'Release notes for the new version.'
