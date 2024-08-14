@@ -39,22 +39,20 @@ jobs:
           echo "RELEASE_TAG=$releaseTag" >> $env:GITHUB_ENV
           echo "RELEASE_NAME=Release $releaseTag" >> $env:GITHUB_ENV
 
-      - name: Create GitHub Release
-        id: create_release
-        uses: actions/create-release@v1
+      - name: Create GitHub Release with gh CLI
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          tag_name: "${{ env.RELEASE_TAG }}"
-          release_name: "${{ env.RELEASE_NAME }}"
-          body: 'Release notes for the new version.'
-          draft: false
-          prerelease: false
+          RELEASE_TAG: ${{ env.RELEASE_TAG }}
+        run: |
+          gh release create "$RELEASE_TAG" \
+              --repo="$GITHUB_REPOSITORY" \
+              --title="Release $RELEASE_TAG" \
+              --generate-notes
 
-      - name: Upload Release Asset
-        uses: actions/upload-release-asset@v1
-        with:
-          upload_url: ${{ steps.create_release.outputs.upload_url }}
-          asset_path: "${{env.DOTNET_ROOT}}/release"
-          asset_name: "JDiscordBot_${{ env.RELEASE_TAG }}.zip"
-          asset_content_type: application/zip
+      - name: Upload Release Asset with gh CLI
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_TAG: ${{ env.RELEASE_TAG }}
+        run: |
+          gh release upload "$RELEASE_TAG" "${{env.DOTNET_ROOT}}/release"/* \
+              --repo="$GITHUB_REPOSITORY"
