@@ -5,7 +5,10 @@ on:
     branches:
       - master
   workflow_dispatch:
-
+  
+permissions:
+  contents: write  # Grants the necessary permission to create and upload releases
+  
 jobs:
   build_and_release:
     runs-on: windows-latest
