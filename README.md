@@ -1,6 +1,6 @@
 # Discord Bot
 
-BotApplication is the main file application, domain is shared and DiscordBot is just prepped for webhook.
+BotApplication is the main file application, Domain is shared and DiscordBot is just prepped for webhook.
 
 This is a simple Discord bot implemented in C# using the Discord.Net library.
 
