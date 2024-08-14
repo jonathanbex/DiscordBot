@@ -91,19 +91,21 @@ namespace BotApplication.Worker
             "`!clear <x>` - Clears `x` number of messages from the channel.\n" +
             "`!addRole <role>` - Adds the specified role to a user. For example: `!addRole Fyllhund Guildmaster Member`.\n" +
             "`!addEditCommand <key> [Value]` - Add or updates the existing key for this value to be used later. I.e !addEditcommand GuildInformation [Ensure you have tacos for me].\n" +
-            "`!guildInfo` - Returns information about the guild.\n");
-        if (registeredCommands.Any())
+            "`!jHelp` - Returns a list of commands.\n");
+        if (registeredCommands != null && registeredCommands.Any())
         {
           stringBuilder.AppendLine("**Custom Commands**");
+
+          foreach (var registeredCommand in registeredCommands)
+          {
+            stringBuilder.AppendLine($"`!{registeredCommand.Key}`");
+          }
+          if (registeredCommands.Any())
+          {
+            stringBuilder.AppendLine("**All commands are case insensitive**");
+          }
         }
-        foreach (var registeredCommand in registeredCommands)
-        {
-          stringBuilder.AppendLine($"`!{registeredCommand.Key}`");
-        }
-        if (registeredCommands.Any())
-        {
-          stringBuilder.AppendLine("**All commands are case insensitive**");
-        }
+
         await context.Channel.SendMessageAsync(stringBuilder.ToString());
       }
       else if (command.StartsWith("addEditCommand", StringComparison.InvariantCultureIgnoreCase))
