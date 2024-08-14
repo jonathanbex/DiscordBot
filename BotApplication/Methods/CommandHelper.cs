@@ -42,14 +42,9 @@ namespace BotApplication.Methods
       var parts = StringUtility.SmartSplit(command);
       var key = parts[1];
       var value = parts[2];
-      try
-      {
-        var model = await _commandService.AddOrUpdateCommand(guildId, key, value);
-      }
-      catch (Exception ex)
-      {
-        var hej = ex;
-      }
+
+      var model = await _commandService.AddOrUpdateCommand(guildId, key, value);
+
       var confirmationMessage = await context.Channel.SendMessageAsync($"added command !{key} with message {value}");
       await Task.Delay(TimeSpan.FromSeconds(2));
       await confirmationMessage.DeleteAsync();

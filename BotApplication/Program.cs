@@ -1,4 +1,5 @@
-﻿using BotApplication.Methods;
+﻿using BotApplication.Helper;
+using BotApplication.Methods;
 using BotApplication.Queue;
 using BotApplication.Worker;
 using Domain.Infrastructure.Context;
@@ -15,16 +16,24 @@ public class Program
   public static async Task Main(string[] args)
   {
     // Build the configuration
-    var configuration = new ConfigurationBuilder()
-        .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-        .Build();
+    var configuration = TryGetConfigurationHelper.LoadConfiguration("appsettings.json");
 
     // Create a HostBuilder
     var host = Host.CreateDefaultBuilder(args)
         .ConfigureServices((context, services) =>
         {
           services.AddSingleton<IConfiguration>(configuration);
-          services.AddScoped(serviceProvider => new DiscordbotContext(context.Configuration.GetConnectionString("DiscordBotEntitites")));
+          services.AddScoped(serviceProvider =>
+          {
+            var connectionString = context.Configuration.GetConnectionString("DiscordBotEntitites");
+
+            if (string.IsNullOrEmpty(connectionString))
+            {
+              return null;
+            }
+
+            return new DiscordbotContext(connectionString);
+          });
           services.AddScoped<IServerCommandRepository, ServerCommandRepository>();
           services.AddScoped<IServerCommandService, ServerCommandService>();
           services.AddScoped<ClearingHelper>();

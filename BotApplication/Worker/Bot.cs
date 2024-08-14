@@ -45,6 +45,11 @@ namespace BotApplication.Worker
     public async Task RunAsync()
     {
       var token = _config.GetValue<string>("DiscordBot:Token");
+      if (token == null)
+      {
+        Console.WriteLine("Missing Token for discord, make sure you have registered your bot and received a token from discord");
+        throw new ArgumentNullException("token");
+      }
       await _client.LoginAsync(TokenType.Bot, token);
       await _client.StartAsync();
 

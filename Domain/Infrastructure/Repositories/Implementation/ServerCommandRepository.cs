@@ -8,13 +8,14 @@ namespace Domain.Infrastructure.Repositories.Implementation
 {
   public class ServerCommandRepository : IServerCommandRepository
   {
-    private DiscordbotContext _discordbotContext;
-    public ServerCommandRepository(DiscordbotContext discordbotContext)
+    private DiscordbotContext? _discordbotContext;
+    public ServerCommandRepository(DiscordbotContext? discordbotContext)
     {
       _discordbotContext = discordbotContext;
     }
     public async Task<ServerCommand> AddOrUpdateServerCommand(ServerCommand command)
     {
+      ValidateConnection();
       var entry = await _discordbotContext.ServerCommands.FirstOrDefaultAsync(x => x.Guid == command.GUID && x.GuildId == command.GuildId);
       if (entry == null)
       {
@@ -31,6 +32,7 @@ namespace Domain.Infrastructure.Repositories.Implementation
 
     public async Task<bool> DeleteCommand(ServerCommand command)
     {
+      ValidateConnection();
       var entry = await _discordbotContext.ServerCommands.FirstOrDefaultAsync(x => x.Guid == command.GUID && x.GuildId == command.GuildId);
       if (entry == null) return true;
       _discordbotContext.Remove(entry);
@@ -40,6 +42,8 @@ namespace Domain.Infrastructure.Repositories.Implementation
 
     public async Task<List<ServerCommand>?> GetAllCommands(string guildId)
     {
+      //if no db set just return empty list
+      if (_discordbotContext == null) return new List<ServerCommand>();
       var commands = await _discordbotContext.ServerCommands.Where(x => x.GuildId == guildId).ToListAsync();
       var result = new List<ServerCommand>();
       foreach (var command in commands)
@@ -51,6 +55,8 @@ namespace Domain.Infrastructure.Repositories.Implementation
 
     public async Task<ServerCommand?> GetCommand(string guildId, string key)
     {
+      //if no DB return null;
+      if (_discordbotContext == null) return null;
       var dbCommand = await _discordbotContext.ServerCommands.Where(x => x.GuildId == guildId && x.Key == key).FirstOrDefaultAsync();
       if (dbCommand == null) return null;
       return DBMapper.MapToViewModel(dbCommand);
@@ -61,6 +67,11 @@ namespace Domain.Infrastructure.Repositories.Implementation
       var dbCommand = await _discordbotContext.ServerCommands.Where(x => x.GuildId == guildId && x.Guid == guid).FirstOrDefaultAsync();
       if (dbCommand == null) return null;
       return DBMapper.MapToViewModel(dbCommand);
+    }
+    private bool ValidateConnection()
+    {
+      if (_discordbotContext == null) throw new InvalidDataException("Can not use Server command service without a database");
+      return true;
     }
   }
 }
