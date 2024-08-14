@@ -51,9 +51,15 @@ jobs:
         run: |
           $RELEASE_TAG = $env:RELEASE_DATE
           $COUNTER = 0
-          while (gh release view $RELEASE_TAG -ErrorAction SilentlyContinue) {
-            $COUNTER++
-            $RELEASE_TAG = "$($env:RELEASE_DATE)-$COUNTER"
+          $ReleaseExists = $false
+          while (-not $ReleaseExists) {
+            try {
+              gh release view $RELEASE_TAG
+              $COUNTER++
+              $RELEASE_TAG = "$($env:RELEASE_DATE)-$COUNTER"
+            } catch {
+              $ReleaseExists = $true
+            }
           }
           echo "RELEASE_TAG=$RELEASE_TAG" >> $env:GITHUB_ENV
           echo "RELEASE_NAME=Release $RELEASE_TAG" >> $env:GITHUB_ENV
