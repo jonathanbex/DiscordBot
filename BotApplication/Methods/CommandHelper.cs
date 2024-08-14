@@ -35,7 +35,7 @@ namespace BotApplication.Methods
 
       if (!permissions.ManageMessages)
       {
-
+        await context.User.SendMessageAsync("You are not allowed to do this, you need Manage Messages");
         return;
       }
       var guildId = context.Guild.Id.ToString();

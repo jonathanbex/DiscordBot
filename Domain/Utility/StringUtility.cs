@@ -6,8 +6,10 @@ namespace Domain.Utility
   {
     public static List<string> SmartSplit(this string input)
     {
-      var matches = Regex.Matches(input, @"\[([^\[\]]+)\]|(\S+)");
-      return matches.Cast<Match>().Select(m => m.Groups[1].Value != "" ? m.Groups[1].Value : m.Groups[2].Value).ToList();
+      var matches = Regex.Matches(input, @"\[([^\[\]]+)\]|\S+");
+      return matches.Cast<Match>()
+                    .Select(m => m.Groups[1].Success ? m.Groups[1].Value : m.Value)
+                    .ToList();
     }
   }
 }

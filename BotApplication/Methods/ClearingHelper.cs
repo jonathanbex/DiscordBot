@@ -32,6 +32,7 @@ namespace BotApplication.Methods
 
       if (!permissions.ManageMessages)
       {
+        await context.User.SendMessageAsync("You are not allowed to do this, you need Manage Messages");
 
         return;
       }
@@ -54,7 +55,7 @@ namespace BotApplication.Methods
             await (context.Channel as ITextChannel).DeleteMessagesAsync(chunk);
           }
 
-          var confirmationMessage = await context.Channel.SendMessageAsync($"{messagesToDelete} messages deleted!");
+          var confirmationMessage = await context.Channel.SendMessageAsync($"{messagesToDelete - 1} messages deleted!");
           await Task.Delay(TimeSpan.FromSeconds(2));
           await confirmationMessage.DeleteAsync();
         }

@@ -29,7 +29,7 @@ namespace BotApplication.Methods
 
       if (!permissions.ManageRoles)
       {
-
+        await context.User.SendMessageAsync("You are not allowed to do this, you need Manage Roles");
         return;
       }
 
