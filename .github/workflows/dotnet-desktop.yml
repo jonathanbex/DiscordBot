@@ -1,0 +1,77 @@
+name: J DiscordBot Release CI/CD
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    if: "contains(github.event.head_commit.message, '-release')"
+    steps:
+      - uses: actions/checkout@v3
+        
+      - name: Set up .NET Core
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '8.0.x'
+          
+      - name: Restore dependencies
+        run: dotnet restore
+        
+      - name: Build with dotnet
+        run: dotnet build DiscordBot --configuration Release /clp:ErrorsOnly
+
+      - name: dotnet publish
+        run: dotnet publish BotApplication -c Release -o "${{env.DOTNET_ROOT}}/release" -p:DebugType=None
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: .net-app
+          path: "${{env.DOTNET_ROOT}}/release"
+      
+  release:
+    runs-on: windows-latest
+    needs: build
+    steps:
+      - name: Download artifact from build job
+        uses: actions/download-artifact@v4
+        with:
+          name: .net-app
+
+      - name: Set Initial Release Date
+        id: set_initial_release_date
+        run: echo "RELEASE_DATE=$(date +'%Y%m%d')" >> $GITHUB_ENV
+
+      - name: Check for Existing Releases
+        id: check_release
+        run: |
+          RELEASE_TAG="${{ env.RELEASE_DATE }}"
+          COUNTER=0
+          while gh release view "$RELEASE_TAG" &> /dev/null; do
+            COUNTER=$((COUNTER+1))
+            RELEASE_TAG="${{ env.RELEASE_DATE }}-${COUNTER}"
+          done
+          echo "RELEASE_TAG=$RELEASE_TAG" >> $GITHUB_ENV
+          echo "RELEASE_NAME=Release $RELEASE_TAG" >> $GITHUB_ENV
+
+      - name: Create GitHub Release
+        id: create_release
+        uses: actions/create-release@v1
+        with:
+          tag_name: "${{ env.RELEASE_TAG }}"
+          release_name: "${{ env.RELEASE_NAME }}"
+          body: 'Release notes for the new version.'
+          draft: false
+          prerelease: false
+
+      - name: Upload Release Asset
+        uses: actions/upload-release-asset@v1
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: "${{env.DOTNET_ROOT}}/release"
+          asset_name: "JDiscordBot_${{ env.RELEASE_TAG }}.zip"
+          asset_content_type: application/zip
