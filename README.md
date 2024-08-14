@@ -29,7 +29,7 @@ This is a simple Discord bot implemented in C# using the Discord.Net library.
 
 3. **Configure the Bot**:
 
-    Update the `appsettings.json` file with your bot's token:
+    Update the `appsettings.json` file with your bot's token and optionally a connectionString for entity framework if you want to save commands:
 
     ```json
     {
