@@ -50,10 +50,15 @@ jobs:
         run: |
           gh release create "$env:RELEASE_TAG" --repo="$env:GITHUB_REPOSITORY" --title="Release $env:RELEASE_TAG" --generate-notes
 
+      - name: Zip Release Assets
+        shell: pwsh
+        run: |
+          Compress-Archive -Path "${{env.DOTNET_ROOT}}/release/*" -DestinationPath "${{env.DOTNET_ROOT}}/release/JDiscordBot_${{ env.RELEASE_TAG }}.zip"
+
       - name: Upload Release Asset with gh CLI
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           RELEASE_TAG: ${{ env.RELEASE_TAG }}
           GITHUB_REPOSITORY: ${{ github.repository }}
         run: |
-          gh release upload "$env:RELEASE_TAG" "${{env.DOTNET_ROOT}}/release/*" --repo="$env:GITHUB_REPOSITORY"
+          gh release upload "$env:RELEASE_TAG" "${{env.DOTNET_ROOT}}/release/JDiscordBot_${{ env.RELEASE_TAG }}.zip" --repo="$env:GITHUB_REPOSITORY"
