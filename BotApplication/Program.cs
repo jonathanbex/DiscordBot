@@ -15,10 +15,9 @@ public class Program
 {
   public static async Task Main(string[] args)
   {
-    // Build the configuration
     var configuration = TryGetConfigurationHelper.LoadConfiguration("appsettings.json");
 
-    // Create a HostBuilder
+    // Create a HostBuilder for DI etc.
     var host = Host.CreateDefaultBuilder(args)
         .ConfigureServices((context, services) =>
         {
