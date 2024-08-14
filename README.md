@@ -4,13 +4,6 @@ BotApplication is the main file application, Domain is shared and DiscordBot is 
 
 This is a simple Discord bot implemented in C# using the Discord.Net library.
 
-## Features
-
-- **Clear Command**: Allows users to clear a specified number of messages from a channel.
-- **Add Roles Command**: Allows users to add roles to another user.
-- **Guild Info**: Returns list of preformatted guild info.
-- **J Help**: Returns list of commands
-
 ## Setup
 
 1. **Clone the Repository**:
