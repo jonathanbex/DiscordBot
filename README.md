@@ -35,7 +35,10 @@ This is a simple Discord bot implemented in C# using the Discord.Net library.
     {
       "DiscordBot": {
         "Token": "YOUR_BOT_TOKEN"
-      }
+      },
+      "ConnectionStrings": {
+    "DiscordBotEntitites": "Persist Security Info=True;Server=tcp:IPADDRESS,1433;Initial Catalog=DB;User ID=DBUSER;Password=DBPassword;multipleactiveresultsets=True;TrustServerCertificate=True"
+  }
     }
     ```
 
@@ -46,11 +49,11 @@ This is a simple Discord bot implemented in C# using the Discord.Net library.
     ```
 
 ## Commands
-
+- `!hello`: Greets the user and provides info about jHelp
 - `!clear [number]`: Deletes the specified number of messages from the channel (up to 100).
-- `!addRoles [string] [string]`: Add specific roles to user. I.e !addRoles Megapap Member Officer. Use [For space separated roles I.e Guild member]
-- `!addCommand`: adds or updates command with text I.e !addCommand GuildInfo [We are the biggest guild] which will result in !addCommand returns We are the Biggest guild
-- `!JHelp`: Returns list of commands
+- `!addRole [string] [string]`: Add specific roles to user. I.e !addRoles Megapap Member Officer. Use [] For space separated roles I.e [Guild member]
+- `!addEditCommand`: adds or updates command with text I.e !addCommand GuildInfo [We are the biggest guild] which will result in !addCommand returns We are the Biggest guild
+- `!jHelp`: Returns list of commands
 ## License
 
 This project is licensed under the MIT License.
