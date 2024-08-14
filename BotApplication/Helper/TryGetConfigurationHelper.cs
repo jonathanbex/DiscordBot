@@ -22,6 +22,7 @@ namespace BotApplication.Helper
         }
       }
 
+
       try
       {
         // Attempt to read and parse the file as JSON
