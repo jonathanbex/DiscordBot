@@ -38,7 +38,7 @@ This is a simple Discord bot implemented in C# using the Discord.Net library.
       },
       "ConnectionStrings": {
         "DiscordBotEntitites": "Persist Security Info=True;Server=tcp:IPADDRESS,1433;Initial Catalog=DB;User     
-    ID=DBUSER;Password=DBPassword;multipleactiveresultsets=True;TrustServerCertificate=True"
+            ID=DBUSER;Password=DBPassword;multipleactiveresultsets=True;TrustServerCertificate=True"
       }
     }
     ```
