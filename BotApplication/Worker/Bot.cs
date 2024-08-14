@@ -88,6 +88,10 @@ namespace BotApplication.Worker
       {
         await _roleHelper.AddRoles(context, command);
       }
+      else if (command.StartsWith("addEditCommand", StringComparison.InvariantCultureIgnoreCase))
+      {
+        await _commandHelper.AddOrUpdateCommand(context, command);
+      }
       else if (command.StartsWith("jHelp", StringComparison.InvariantCultureIgnoreCase))
       {
         var registeredCommands = await _serverCommandService.ListAllCommands(context.Guild.Id.ToString());
@@ -113,11 +117,7 @@ namespace BotApplication.Worker
 
         await context.Channel.SendMessageAsync(stringBuilder.ToString());
       }
-      else if (command.StartsWith("addEditCommand", StringComparison.InvariantCultureIgnoreCase))
-      {
-        await _commandHelper.AddOrUpdateCommand(context, command);
 
-      }
       else
       {
         var entry = await _serverCommandService.GetCommandValue(context.Guild.Id.ToString(), command);
