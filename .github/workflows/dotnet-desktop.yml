@@ -29,7 +29,7 @@ jobs:
         run: dotnet build DiscordBot --configuration Release /clp:ErrorsOnly
 
       - name: dotnet publish
-        run: dotnet publish BotApplication -c Release -r win-x64 -p:PublishSingleFile=true -p:PublishTrimmed=true -p:IncludeAllContentForSelfExtract=true -o "${{env.DOTNET_ROOT}}/release" -p:DebugType=Non
+        run: dotnet publish BotApplication -c Release -r win-x64 -p:PublishSingleFile=true -p:PublishTrimmed=true -p:IncludeAllContentForSelfExtract=true -o "${{env.DOTNET_ROOT}}/release" -p:DebugType=None
      
       - name: Create appsettings.json in Release Directory
         shell: pwsh
