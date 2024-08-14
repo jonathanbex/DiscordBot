@@ -41,7 +41,7 @@ This is a simple Discord bot implemented in C# using the Discord.Net library.
     dotnet run
     ```
 
-## Commands
+## Commands (All commands are case insensitive)
 - `!hello`: Greets the user and provides info about jHelp
 - `!clear [number]`: Deletes the specified number of messages from the channel (up to 100).
 - `!addRole [string] [string]`: Add specific roles to user. I.e !addRoles Megapap Member Officer. Use [] For space separated roles I.e [Guild member]
