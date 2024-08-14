@@ -19,6 +19,7 @@ namespace Domain.Services.Implementations
 
       if (command == null) command = new ServerCommand(true) { GuildId = guildId, Key = key, Value = value };
       command.Value = value;
+      command.Updated = DateTime.UtcNow;
       var result = await _serverCommandRepository.AddOrUpdateServerCommand(command);
       return result;
     }

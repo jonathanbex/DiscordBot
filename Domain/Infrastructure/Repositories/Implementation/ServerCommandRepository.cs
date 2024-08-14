@@ -24,6 +24,7 @@ namespace Domain.Infrastructure.Repositories.Implementation
       entry.Key = command.Key;
       entry.Value = command.Value;
       entry.GuildId = command.GuildId;
+      entry.Updated = command.Updated;
       await _discordbotContext.SaveChangesAsync();
       return DBMapper.MapToViewModel(entry);
     }

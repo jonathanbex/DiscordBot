@@ -4,7 +4,12 @@
   {
     public ServerCommand(bool create)
     {
-      if (create) GUID = Guid.NewGuid().ToString();
+      if (create)
+      {
+        GUID = Guid.NewGuid().ToString();
+        Created = DateTime.UtcNow;
+        Updated = DateTime.UtcNow;
+      }
     }
     public string GUID { get; set; }
     public string GuildId { get; set; }
