@@ -9,5 +9,6 @@ namespace Domain.Infrastructure.Repositories.Interfaces
     Task<ServerCommand?> GetCommandWithGuid(string guildId, string guid);
     Task<ServerCommand?> GetCommand(string guildId, string key);
     Task<List<ServerCommand>?> GetAllCommands(string guildId);
+    Task<int> GetCommandCount(string guildId);
   }
 }

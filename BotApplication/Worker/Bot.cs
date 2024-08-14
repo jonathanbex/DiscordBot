@@ -92,6 +92,10 @@ namespace BotApplication.Worker
       {
         await _commandHelper.AddOrUpdateCommand(context, command);
       }
+      else if (command.StartsWith("removeCommand", StringComparison.InvariantCultureIgnoreCase))
+      {
+        await _commandHelper.RemoveCommand(context, command);
+      }
       else if (command.StartsWith("jHelp", StringComparison.InvariantCultureIgnoreCase))
       {
         var registeredCommands = await _serverCommandService.ListAllCommands(context.Guild.Id.ToString());
@@ -100,10 +104,11 @@ namespace BotApplication.Worker
             "`!clear <x>` - Clears `x` number of messages from the channel.\n" +
             "`!addRole <role>` - Adds the specified role to a user. For example: `!addRole Fyllhund Guildmaster Member`.\n" +
             "`!addEditCommand <key> [Value]` - Add or updates the existing key for this value to be used later. I.e !addEditcommand GuildInformation [Ensure you have tacos for me].\n" +
+            "`!removeCommand <key>` - Removed command if found. I.e !removeCommand Tacolaco.\n" +
             "`!jHelp` - Returns a list of commands.\n");
         if (registeredCommands != null && registeredCommands.Any())
         {
-          stringBuilder.AppendLine("**Custom Commands**");
+          stringBuilder.AppendLine($"**Custom Commands {registeredCommands.Count()}/100**");
 
           foreach (var registeredCommand in registeredCommands)
           {

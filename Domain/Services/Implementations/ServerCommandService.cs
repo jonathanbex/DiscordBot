@@ -17,7 +17,15 @@ namespace Domain.Services.Implementations
       ValidateKeys(guildId, key, value);
       var command = await _serverCommandRepository.GetCommand(guildId, key);
 
-      if (command == null) command = new ServerCommand(true) { GuildId = guildId, Key = key, Value = value };
+      if (command == null)
+      {
+        command = new ServerCommand(true) { GuildId = guildId, Key = key, Value = value };
+        var currentCommandCount = await GetCommandCount(guildId);
+        if (currentCommandCount >= 100)
+        {
+          throw new NotSupportedException("Can not have more than 100 commands");
+        }
+      }
       command.Value = value;
       command.Updated = DateTime.UtcNow;
       var result = await _serverCommandRepository.AddOrUpdateServerCommand(command);
@@ -35,6 +43,11 @@ namespace Domain.Services.Implementations
     public async Task<bool> DeleteCommand(ServerCommand command)
     {
       return await _serverCommandRepository.DeleteCommand(command);
+    }
+
+    public async Task<int> GetCommandCount(string guildId)
+    {
+      return await _serverCommandRepository.GetCommandCount(guildId);
     }
 
     public async Task<ServerCommand?> GetCommandValue(string guildId, string key)

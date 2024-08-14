@@ -68,6 +68,11 @@ namespace Domain.Infrastructure.Repositories.Implementation
       if (dbCommand == null) return null;
       return DBMapper.MapToViewModel(dbCommand);
     }
+    public async Task<int> GetCommandCount(string guildId)
+    {
+      ValidateConnection();
+      return await _discordbotContext.ServerCommands.Where(x => x.GuildId == guildId).CountAsync();
+    }
     private bool ValidateConnection()
     {
       if (_discordbotContext == null) throw new InvalidDataException("Can not use Server command service without a database");

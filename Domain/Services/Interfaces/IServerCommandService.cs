@@ -9,5 +9,7 @@ namespace Domain.Services.Interfaces
     Task<ServerCommand> AddOrUpdateCommand(string guildId, string key, string value);
     Task<bool> DeleteCommand(string guildId, string key);
     Task<bool> DeleteCommand(ServerCommand command);
+
+    Task<int> GetCommandCount(string guildId);
   }
 }
