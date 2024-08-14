@@ -16,7 +16,9 @@ namespace Domain.Services.Implementations
     {
       ValidateKeys(guildId, key, value);
       var command = await _serverCommandRepository.GetCommand(guildId, key);
+
       if (command == null) command = new ServerCommand(true) { GuildId = guildId, Key = key, Value = value };
+      command.Value = value;
       var result = await _serverCommandRepository.AddOrUpdateServerCommand(command);
       return result;
     }
@@ -46,7 +48,19 @@ namespace Domain.Services.Implementations
       return await _serverCommandRepository.GetAllCommands(guildId);
     }
 
-    private void ValidateKeys(string guildId, string? key = null, string? value = null)
+    private void ValidateKeys(string guildId)
+    {
+      if (string.IsNullOrEmpty(guildId)) throw new InvalidDataException("missing guildId");
+    }
+
+    private void ValidateKeys(string guildId, string? key)
+    {
+      if (string.IsNullOrEmpty(guildId)) throw new InvalidDataException("missing guildId");
+      if (string.IsNullOrEmpty(key)) throw new InvalidDataException("missing key");
+    }
+
+
+    private void ValidateKeys(string guildId, string? key, string? value)
     {
       if (string.IsNullOrEmpty(guildId)) throw new InvalidDataException("missing guildId");
       if (string.IsNullOrEmpty(key)) throw new InvalidDataException("missing key");

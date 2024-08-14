@@ -55,14 +55,14 @@ namespace BotApplication.Methods
           }
 
           var confirmationMessage = await context.Channel.SendMessageAsync($"{messagesToDelete} messages deleted!");
-          await Task.Delay(TimeSpan.FromSeconds(5));
+          await Task.Delay(TimeSpan.FromSeconds(2));
           await confirmationMessage.DeleteAsync();
         }
         else
         {
           var invalidQuantityMessage = await context.Channel.SendMessageAsync("Please specify a number between 1 and 100.");
 
-          await Task.Delay(TimeSpan.FromSeconds(5));
+          await Task.Delay(TimeSpan.FromSeconds(2));
           await invalidQuantityMessage.DeleteAsync();
         }
       }

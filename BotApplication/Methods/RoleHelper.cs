@@ -60,7 +60,7 @@ namespace BotApplication.Methods
 
         var addedRoleMessage = await context.Channel.SendMessageAsync($"Added roles to user {user}");
 
-        await Task.Delay(TimeSpan.FromSeconds(5));
+        await Task.Delay(TimeSpan.FromSeconds(2));
         await addedRoleMessage.DeleteAsync();
       }
     }

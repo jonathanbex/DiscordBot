@@ -1,10 +1,8 @@
-﻿using Discord;
-using Discord.Commands;
-using Discord.WebSocket;
+﻿using Discord.Commands;
 
 namespace BotApplication.Methods
 {
-	public static class GuildInfoHelper
+  public static class GuildInfoHelper
 	{
 		public static readonly string LootRulesMessage = @"
 **Loot Rules for Raid1**
