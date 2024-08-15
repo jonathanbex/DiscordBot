@@ -34,10 +34,13 @@ public class Program
             return new DiscordbotContext(connectionString);
           });
           services.AddScoped<IServerCommandRepository, ServerCommandRepository>();
+          services.AddScoped<IGuildLineupRepository, GuildLineupRepository>();
           services.AddScoped<IServerCommandService, ServerCommandService>();
+          services.AddScoped<IGuildLineupService, GuildLineupService>();
           services.AddScoped<ClearingHelper>();
           services.AddScoped<CommandHelper>();
           services.AddScoped<RoleHelper>();
+          services.AddScoped<GuildLineupHelper>();
           services.AddSingleton<TaskQueue>();
 
 

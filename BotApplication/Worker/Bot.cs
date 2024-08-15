@@ -20,12 +20,14 @@ namespace BotApplication.Worker
     private ClearingHelper _clearingHelper;
     private RoleHelper _roleHelper;
     private CommandHelper _commandHelper;
+    private GuildLineupHelper _guildLineupHelper;
     public Bot(IConfiguration config,
       TaskQueue taskQueue,
       IServerCommandService serverCommandService,
       ClearingHelper clearingHelper,
       RoleHelper roleHelper,
-      CommandHelper commandHelper)
+      CommandHelper commandHelper,
+      GuildLineupHelper guildLineupHelper)
     {
       _client = new DiscordSocketClient(new DiscordSocketConfig
       {
@@ -39,7 +41,7 @@ namespace BotApplication.Worker
       _commandHelper = commandHelper;
       _client.Log += Log;
       _client.MessageReceived += MessageReceivedAsync;
-
+      _guildLineupHelper = guildLineupHelper;
     }
 
     public async Task RunAsync()
@@ -96,6 +98,18 @@ namespace BotApplication.Worker
       {
         await _commandHelper.RemoveCommand(context, command);
       }
+      else if (command.StartsWith("addEditLineup", StringComparison.InvariantCultureIgnoreCase))
+      {
+        await _guildLineupHelper.AddOrUpdateLineup(context, command);
+      }
+      else if (command.StartsWith("removeLineup", StringComparison.InvariantCultureIgnoreCase))
+      {
+        await _guildLineupHelper.RemoveLineup(context, command);
+      }
+      else if (command.StartsWith("getLineup", StringComparison.InvariantCultureIgnoreCase))
+      {
+        await _guildLineupHelper.GetLineup(context, command);
+      }
       else if (command.StartsWith("jHelp", StringComparison.InvariantCultureIgnoreCase))
       {
         var registeredCommands = await _serverCommandService.ListAllCommands(context.Guild.Id.ToString());
@@ -105,6 +119,9 @@ namespace BotApplication.Worker
             "`!addRole <role>` - Adds the specified role to a user. For example: `!addRole Fyllhund Guildmaster Member. use [] for space separate roles i.e [Guild Member]`.\n" +
             "`!addEditCommand <key> [Value]` - Add or updates the existing key for this value to be used later. I.e !addEditcommand GuildInformation [Ensure you have tacos for me].\n" +
             "`!removeCommand <key>` - Removes command if found. I.e !removeCommand Tacolaco.\n" +
+            "`!getLineup <name or prompt>` - Returns lineup if exists. I.e !getLineup Raid1 or !getLineup tonight (tonight/today/tommorow are valid).\n" +
+            "`!addEditLineup <name> [<Time> (yyyyMMdd HH:mm)]  [<value>] ` - Add or updates the existing lineup I.e !addEditLineup Raid1 [20240815 20:00] [```Tanks: Megatank, smal tank````].\n" +
+            "`!removeLineup <name>` - Removes lineup if found. I.e !removeLineup Raid1.\n" +
             "`!jHelp` - Returns a list of commands.\n");
         if (registeredCommands != null && registeredCommands.Any())
         {

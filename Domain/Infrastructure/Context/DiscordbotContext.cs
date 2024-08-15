@@ -16,6 +16,8 @@ public partial class DiscordbotContext : DbContext
 
   public virtual DbSet<DB_ServerCommand> ServerCommands { get; set; }
 
+  public virtual DbSet<DB_GuildLineup> GuildLineups { get; set; }
+
   public virtual DbSet<VerifiedGuild> VerifiedGuilds { get; set; }
 
 
@@ -62,6 +64,27 @@ public partial class DiscordbotContext : DbContext
       entity.Property(e => e.Value).IsUnicode(false);
     });
 
+    modelBuilder.Entity<DB_GuildLineup>(entity =>
+    {
+      entity.HasKey(e => e.Guid);
+
+      entity.ToTable("GuildLineup");
+
+      entity.Property(e => e.Guid)
+              .HasMaxLength(50)
+              .IsUnicode(false);
+      entity.Property(e => e.ValidFor).HasColumnType("datetime");
+      entity.Property(e => e.Created).HasColumnType("datetime");
+      entity.Property(e => e.GuildId)
+              .HasMaxLength(100)
+              .IsUnicode(false);
+      entity.Property(e => e.Name)
+        .HasMaxLength(100)
+        .IsUnicode(false);
+      entity.Property(e => e.Updated).HasColumnType("datetime");
+      entity.Property(e => e.Value).IsUnicode(false);
+    });
+
     modelBuilder.Entity<VerifiedGuild>(entity =>
     {
       entity.ToTable("VerifiedGuild");
@@ -69,7 +92,13 @@ public partial class DiscordbotContext : DbContext
       entity.Property(e => e.GuildId)
               .HasMaxLength(100)
               .IsUnicode(false);
+
+      entity.Property(e => e.TimeZone)
+              .HasMaxLength(100)
+              .IsUnicode(false);
       entity.Property(e => e.LastPayment).HasColumnType("datetime");
+
+      entity.Property(e => e.Created).HasColumnType("created");
     });
 
     OnModelCreatingPartial(modelBuilder);
