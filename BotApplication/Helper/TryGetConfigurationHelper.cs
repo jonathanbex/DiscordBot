@@ -7,19 +7,33 @@ namespace BotApplication.Helper
   {
     public static IConfiguration LoadConfiguration(string filePath = "appsettings.json")
     {
-      // Get the path where the executable is located
       string exePath = AppContext.BaseDirectory;
-      string fullPath = Path.Combine(exePath, filePath);
+      string exeFullPath = Path.Combine(exePath, filePath);
 
       // Check if the file exists in the executable directory
-      if (!File.Exists(fullPath))
+      if (!File.Exists(exeFullPath))
       {
-        // If not found, check the current working directory
-        fullPath = Path.Combine(Directory.GetCurrentDirectory(), filePath);
-        if (!File.Exists(fullPath))
+        // If the file doesn't exist, determine the correct directory to create it in
+        string projectRootPath = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName;
+        string projectRootFullPath = Path.Combine(projectRootPath, filePath);
+
+        if (!File.Exists(projectRootFullPath))
         {
-          // If the file doesn't exist, create a default configuration file
-          Console.WriteLine($"Configuration file '{filePath}' not found. Creating a default configuration file at '{fullPath}'.");
+          Console.WriteLine($"Configuration file '{filePath}' not found in either the executable directory or the project root directory.");
+
+          string creationPath = exeFullPath;
+
+          if (IsDebug())
+          {
+            // In debug mode, create the file in the project root directory
+            Console.WriteLine($"Creating the default configuration file in the project root at '{projectRootFullPath}'.");
+            creationPath = projectRootFullPath;
+          }
+          else
+          {
+            // In release mode, create the file in the executable directory
+            Console.WriteLine($"Creating the default configuration file in the executable directory at '{exeFullPath}'.");
+          }
 
           var defaultConfig = new
           {
@@ -34,7 +48,7 @@ namespace BotApplication.Helper
           };
 
           var defaultJson = JsonSerializer.Serialize(defaultConfig, new JsonSerializerOptions { WriteIndented = true });
-          File.WriteAllText(fullPath, defaultJson);
+          File.WriteAllText(creationPath, defaultJson);
         }
       }
 
@@ -42,7 +56,7 @@ namespace BotApplication.Helper
       try
       {
         // Attempt to read and parse the file as JSON
-        var json = File.ReadAllText(fullPath);
+        var json = File.ReadAllText(exeFullPath);
         var parsedJson = System.Text.Json.JsonDocument.Parse(json);
       }
       catch (JsonException ex)
@@ -59,6 +73,14 @@ namespace BotApplication.Helper
           .Build();
 
       return configuration;
+    }
+    private static bool IsDebug()
+    {
+#if DEBUG
+      return true;
+#else
+    return false;
+#endif
     }
   }
 }
