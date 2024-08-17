@@ -1,5 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
-using Newtonsoft.Json;
+using System.Text.Json;
 
 namespace BotApplication.Helper
 {
@@ -18,7 +18,23 @@ namespace BotApplication.Helper
         fullPath = Path.Combine(Directory.GetCurrentDirectory(), filePath);
         if (!File.Exists(fullPath))
         {
-          throw new FileNotFoundException($"The configuration file '{filePath}' was not found in either the executable directory or the current working directory.");
+          // If the file doesn't exist, create a default configuration file
+          Console.WriteLine($"Configuration file '{filePath}' not found. Creating a default configuration file at '{fullPath}'.");
+
+          var defaultConfig = new
+          {
+            DiscordBot = new
+            {
+              Token = ""
+            },
+            ConnectionStrings = new
+            {
+              DiscordBotEntities = ""
+            }
+          };
+
+          var defaultJson = JsonSerializer.Serialize(defaultConfig, new JsonSerializerOptions { WriteIndented = true });
+          File.WriteAllText(fullPath, defaultJson);
         }
       }
 

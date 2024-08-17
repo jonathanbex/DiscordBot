@@ -8,7 +8,7 @@
   </PropertyGroup>
 
 <ItemGroup>
-  <None Update="appsettings.json">
+  <None Update="appsettings1.json">
     <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     <Condition>Exists('appsettings.json')</Condition>
