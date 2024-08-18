@@ -16,7 +16,7 @@ namespace Domain.Services.Implementations
     public async Task<GuildLineup> AddOrUpdateLineup(string guildId, string lineupData, string name, DateTimeOffset userCurrentTime, string? validFor = null)
     {
       ValidateKeys(guildId, lineupData, name, validFor);
-      GuildLineup lineup = await _guildLineupRepository.GetLineup(guildId, name);
+      GuildLineup? lineup = await _guildLineupRepository.GetLineup(guildId, name);
       if (lineup == null)
       {
         ValidateValidFor(validFor);
@@ -45,7 +45,9 @@ namespace Domain.Services.Implementations
         return await _guildLineupRepository.GetLineup(guildId, parsedValidFor);
       }
       ValidateKeys(guildId, name);
+#pragma warning disable CS8604 // Possible null reference argument.
       return await _guildLineupRepository.GetLineup(guildId, name);
+#pragma warning restore CS8604 // Possible null reference argument.
     }
 
     public async Task<GuildLineup?> GetLineupForDate(string guildId, DateTimeOffset userCurrentTime, string timeFrame)
@@ -54,7 +56,9 @@ namespace Domain.Services.Implementations
       var result = GetTargetDateTimeRange(timeFrame,userCurrentTime);
       return await _guildLineupRepository.GetLineup(guildId, result.DateFrom, result.DateTo);
     }
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
     public async Task<bool> DeleteLineup(string guildId, string GUID)
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
     {
       throw new NotImplementedException();
     }

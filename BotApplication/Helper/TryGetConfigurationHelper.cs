@@ -8,20 +8,23 @@ namespace BotApplication.Helper
     public static IConfiguration LoadConfiguration(string filePath = "appsettings.json")
     {
       string exePath = AppContext.BaseDirectory;
-      string exeFullPath = Path.Combine(exePath, filePath);
+      string fullPath = Path.Combine(exePath, filePath);
+#pragma warning disable CS8602 // Suppresses the warning for possible null referen
 
+      string projectRootPath = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName;
+#pragma warning restore CS8602 // Re-enables the warning for possible null reference
+      string projectRootFullPath = Path.Combine(projectRootPath, filePath);
       // Check if the file exists in the executable directory
-      if (!File.Exists(exeFullPath))
+      if (!File.Exists(fullPath))
       {
         // If the file doesn't exist, determine the correct directory to create it in
-        string projectRootPath = Directory.GetParent(Directory.GetCurrentDirectory()).Parent.Parent.FullName;
-        string projectRootFullPath = Path.Combine(projectRootPath, filePath);
+
 
         if (!File.Exists(projectRootFullPath))
         {
           Console.WriteLine($"Configuration file '{filePath}' not found in either the executable directory or the project root directory.");
 
-          string creationPath = exeFullPath;
+          string creationPath = fullPath;
 
           if (IsDebug())
           {
@@ -32,7 +35,7 @@ namespace BotApplication.Helper
           else
           {
             // In release mode, create the file in the executable directory
-            Console.WriteLine($"Creating the default configuration file in the executable directory at '{exeFullPath}'.");
+            Console.WriteLine($"Creating the default configuration file in the executable directory at '{fullPath}'.");
           }
 
           var defaultConfig = new
@@ -55,8 +58,14 @@ namespace BotApplication.Helper
 
       try
       {
+
+
+        if (IsDebug())
+        {
+          fullPath = projectRootFullPath;
+        }
         // Attempt to read and parse the file as JSON
-        var json = File.ReadAllText(exeFullPath);
+        var json = File.ReadAllText(fullPath);
         var parsedJson = System.Text.Json.JsonDocument.Parse(json);
       }
       catch (JsonException ex)

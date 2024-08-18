@@ -19,16 +19,17 @@ namespace Domain.Services.Implementations
 		{
 			_httpClientFactory = httpClientFactory;
 			_configuration = configuration;
-			_publicKey = configuration.GetValue<string>("Discord:PublicKey");
+			_publicKey = configuration.GetValue<string>("Discord:PublicKey") ?? "";
 			_logger = logger;
 		}
 
 		public async Task HandleInteraction(Interaction interaction)
 		{
+			if (interaction == null) return;
 			// Ensure the interaction contains a message and that it's not from a bot
 			if (interaction.Message != null && interaction.Message.Author != null && interaction.Message.Author.Verified == false)
 			{
-				string content = interaction?.Message?.Content;
+				string? content = interaction?.Message?.Content;
 				if (content == null) return;
 				// Check if the message starts with the '!' command prefix
 				if (content.StartsWith("!"))
@@ -37,9 +38,11 @@ namespace Domain.Services.Implementations
 					var command = content.Split(' ')[0].Substring(1).ToLower(); // e.g., 'clear'
 					var parameters = content.Substring(command.Length + 2).Trim(); // The rest of the message
 
-					// Handle the command
-					await HandleCommand(interaction, command, parameters);
-				}
+          // Handle the command
+#pragma warning disable CS8604 // Possible null reference argument.
+          await HandleCommand(interaction, command, parameters);
+#pragma warning restore CS8604 // Possible null reference argument.
+        }
 			}
 		}
 
@@ -48,7 +51,8 @@ namespace Domain.Services.Implementations
 			switch (command)
 			{
 				case "clear":
-					await HandleClearCommand(interaction.ChannelId, parameters, interaction.Token);
+          if (interaction.Token == null) return;
+          await HandleClearCommand(interaction.ChannelId, parameters, interaction.Token);
 					break;
 
 				// Add other command handlers here
@@ -167,6 +171,7 @@ namespace Domain.Services.Implementations
 
 		private async Task HandleUnknownCommand(Interaction interaction, string command)
 		{
+			if (interaction.Token == null) return;
 			// Handle what happens when the bot receives an unknown command
 			await SendMessageToChannel(interaction.ChannelId, $"Unknown command: {command}", interaction.Token);
 		}

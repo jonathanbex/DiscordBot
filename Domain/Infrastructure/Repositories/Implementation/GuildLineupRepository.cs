@@ -3,10 +3,10 @@ using Domain.Infrastructure.Repositories.Interfaces;
 using Domain.Mapping;
 using Domain.Models.BusinessLayer;
 using Microsoft.EntityFrameworkCore;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace Domain.Infrastructure.Repositories.Implementation
 {
+#pragma warning disable CS8602 // Suppresses the warning for possible null reference
   public class GuildLineupRepository : IGuildLineupRepository
   {
     private DiscordbotContext? _discordbotContext;
@@ -78,4 +78,5 @@ namespace Domain.Infrastructure.Repositories.Implementation
       return true;
     }
   }
+#pragma warning restore CS8602 // Re-enables the warning for possible null reference
 }

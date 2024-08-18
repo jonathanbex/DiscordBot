@@ -65,7 +65,9 @@ namespace BotApplication.Worker
       return Task.CompletedTask;
     }
 
+#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
     private async Task MessageReceivedAsync(SocketMessage arg)
+#pragma warning restore CS1998 // Async method lacks 'await' operators and will run synchronously
     {
 
       if (arg is not SocketUserMessage message) return;

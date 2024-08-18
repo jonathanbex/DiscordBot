@@ -34,7 +34,7 @@ namespace Domain.Models.Discord
 		public string? ChannelId { get; set; }
 
 		[JsonPropertyName("author")]
-		public InteractionUser Author { get; set; }
+		public InteractionUser? Author { get; set; }
 
 		[JsonPropertyName("content")]
 		public string? Content { get; set; }

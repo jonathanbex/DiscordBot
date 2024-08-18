@@ -6,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Domain.Infrastructure.Repositories.Implementation
 {
+#pragma warning disable CS8602 // Suppresses the warning for possible null reference
   public class ServerCommandRepository : IServerCommandRepository
   {
     private DiscordbotContext? _discordbotContext;
@@ -79,4 +80,5 @@ namespace Domain.Infrastructure.Repositories.Implementation
       return true;
     }
   }
+#pragma warning restore CS8602 // Re-enables the warning for possible null reference
 }

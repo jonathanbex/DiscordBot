@@ -71,31 +71,38 @@ namespace Domain.Utility
         }
         else if (prop.Value.ValueKind == JsonValueKind.String)
         {
+
+#pragma warning disable CS8601 // Possible null reference assignment.
           jsonObject[prop.Name] = prop.Value.GetString();
+#pragma warning restore CS8601 // Possible null reference assignment.
         }
         else
         {
           jsonObject[prop.Name] = prop.Value.ToString();
         }
       }
-
       return jsonObject;
     }
 
     private static void UpdateJsonValue(IDictionary<string, object> jsonObject, string[] keys, string value)
     {
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
       var current = jsonObject;
+      if (current == null) return;
 
       for (int i = 0; i < keys.Length - 1; i++)
       {
+
         if (!current.ContainsKey(keys[i]))
         {
           current[keys[i]] = new Dictionary<string, object>();
         }
+
         current = current[keys[i]] as IDictionary<string, object>;
       }
 
       current[keys[^1]] = value;
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
     }
   }
 }

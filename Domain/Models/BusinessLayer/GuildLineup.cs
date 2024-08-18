@@ -12,7 +12,7 @@
       }
     }
     public string GUID { get; set; }
-    public string GuildId { get; set; }
+    public string? GuildId { get; set; }
     public string? Name { get; set; }
 
     public DateTime? ValidFor { get; set; }

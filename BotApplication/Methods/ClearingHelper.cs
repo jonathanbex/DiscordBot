@@ -52,7 +52,9 @@ namespace BotApplication.Methods
 
           foreach (var chunk in messageChunks)
           {
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
             await (context.Channel as ITextChannel).DeleteMessagesAsync(chunk);
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
           }
 
           var confirmationMessage = await context.Channel.SendMessageAsync($"{messagesToDelete - 1} messages deleted!");
