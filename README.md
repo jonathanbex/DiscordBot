@@ -4,7 +4,14 @@ BotApplication is the main file application, Domain is shared and DiscordBot is 
 
 This is a simple Discord bot implemented in C# using the Discord.Net library.
 
-## Setup
+# Normal Setup
+1. ** Download Release **
+2. ** Start Application **
+3. ** Setup Token and optionally a database connection to store custom commands **
+see https://discord.com/developers/docs/intro for more info
+
+
+## Setup Solution
 
 1. **Clone the Repository**:
 
