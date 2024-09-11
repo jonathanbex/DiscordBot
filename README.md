@@ -11,7 +11,7 @@ This is a simple Discord bot implemented in C# using the Discord.Net library.
 see https://discord.com/developers/docs/intro for more info
 
 
-## Setup Solution
+## Download Solution (Source-code)
 
 1. **Clone the Repository**:
 
