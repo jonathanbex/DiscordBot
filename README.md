@@ -7,7 +7,7 @@ This is a simple Discord bot implemented in C# using the Discord.Net library.
 # Normal Setup
 1. **Download latest release**
 2. **Start application**
-3. **Setup token and optionally a database connection to store custom commands via command line**
+3. **Setup token and optionally a database connection to store custom commands, via command line**
    
 see https://discord.com/developers/docs/intro for more info
 
