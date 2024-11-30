@@ -28,7 +28,10 @@ namespace Domain.Utility
           var json = File.ReadAllText(filePath);
 
           // Parse the JSON file
-          using var jsonDocument = JsonDocument.Parse(json);
+
+          var processedJson = RemoveCommentsFromJson(json);
+          using var jsonDocument = System.Text.Json.JsonDocument.Parse(processedJson);
+
           jsonObject = JsonDocumentToJsonObject(jsonDocument);
         }
         catch (JsonException)
@@ -103,6 +106,14 @@ namespace Domain.Utility
 
       current[keys[^1]] = value;
 #pragma warning restore CS8602 // Dereference of a possibly null reference.
+    }
+    public static string RemoveCommentsFromJson(string json)
+    {
+      var lines = json.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None);
+      var filteredLines = lines
+          .Where(line => !line.TrimStart().StartsWith("//") && !string.IsNullOrWhiteSpace(line)) // Remove lines with comments or empty lines
+          .ToList();
+      return string.Join(Environment.NewLine, filteredLines);
     }
   }
 }

@@ -2,6 +2,7 @@
 using BotApplication.Methods;
 using BotApplication.Queue;
 using BotApplication.Worker;
+using Domain.DependencyInjection;
 using Domain.Infrastructure.Context;
 using Domain.Infrastructure.Repositories.Implementation;
 using Domain.Infrastructure.Repositories.Interfaces;
@@ -38,8 +39,9 @@ public class Program
             return new DiscordbotContext(connectionString);
           });
 #pragma warning restore CS8634 // The type cannot be used as type parameter in the generic type or method. Nullability of type argument doesn't match 'class' constraint.
-          services.AddScoped<IServerCommandRepository, ServerCommandRepository>();
-          services.AddScoped<IGuildLineupRepository, GuildLineupRepository>();
+          services.AddScoped<RepositoryResolver>();
+          services.AddScoped(serviceProvider => serviceProvider.GetService<RepositoryResolver>().ResolveServerCommandRepository());
+          services.AddScoped(serviceProvider => serviceProvider.GetService<RepositoryResolver>().ResolveGuildLineupRepository());
           services.AddScoped<IServerCommandService, ServerCommandService>();
           services.AddScoped<IGuildLineupService, GuildLineupService>();
           services.AddScoped<ClearingHelper>();

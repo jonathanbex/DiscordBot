@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Domain.Utility;
+using Microsoft.Extensions.Configuration;
 using System.Text.Json;
 
 namespace BotApplication.Helper
@@ -60,13 +61,14 @@ namespace BotApplication.Helper
       {
 
 
-        if (IsDebug())
-        {
-          fullPath = projectRootFullPath;
-        }
+        //if (IsDebug())
+        //{
+        //  fullPath = projectRootFullPath;
+        //}
         // Attempt to read and parse the file as JSON
         var json = File.ReadAllText(fullPath);
-        var parsedJson = System.Text.Json.JsonDocument.Parse(json);
+        var processedJson = JsonConfigurationHelper.RemoveCommentsFromJson(json);
+        using var parsedJson = System.Text.Json.JsonDocument.Parse(processedJson);
       }
       catch (JsonException ex)
       {
@@ -83,6 +85,8 @@ namespace BotApplication.Helper
 
       return configuration;
     }
+
+
     private static bool IsDebug()
     {
 #if DEBUG

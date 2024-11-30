@@ -40,49 +40,65 @@ namespace BotApplication.Helper
     private void ValidateAndPromptForConnectionString()
     {
       var connectionString = _configuration.GetConnectionString("DiscordBotEntities");
-      if (string.IsNullOrEmpty(connectionString))
+      var useSqlLite = _configuration.GetValue<bool>("UseSqlLite");
+
+      if (string.IsNullOrEmpty(connectionString) && !useSqlLite)
       {
-        Console.WriteLine("Missing Connection String for the database. This is needed to run more advanced commands like !addEditCommand.");
-        Console.WriteLine("Do you want to set it now? (y/n)");
-        var response = Console.ReadLine();
+        Console.WriteLine("Database configuration is required to run advanced commands like !addEditCommand.");
+        Console.WriteLine("Please choose one of the following options:");
+        Console.WriteLine("1. Enable SQLite (an embedded database). Choose this if you don't want to host your own database but want to save commands.");
+        Console.WriteLine("2. Enter a SQL Server connection string.");
+        Console.WriteLine("3. Skip database configuration (some features will be disabled).");
+        Console.Write("Enter your choice (1, 2, or 3): ");
 
-        if (response == null)
-          throw new ArgumentNullException(nameof(response));
+        var choice = Console.ReadLine();
 
-        if (response.Equals("y", StringComparison.InvariantCultureIgnoreCase) || response.Equals("yes", StringComparison.InvariantCultureIgnoreCase))
+        switch (choice)
         {
-          Console.WriteLine("Please enter your connection string. Here are some examples for different databases:");
+          case "1":
+            Console.WriteLine("Enabling SQLite database. The database file will be created if it does not already exist.");
+            JsonConfigurationHelper.UpdateAppSettings("UseSqlLite", true.ToString());
+            ReloadConfiguration(); // Reload configuration after updating
+            break;
 
-          Console.WriteLine("\nSQL Server:");
-          Console.WriteLine("Server=myServerAddress;Database=myDataBase;User Id=myUsername;Password=myPassword;MultipleActiveResultSets=True;TrustServerCertificate=True");
+          case "2":
+            Console.WriteLine("Please enter your SQL Server connection string. Here is an example:");
+            Console.WriteLine("Server=myServerAddress;Database=myDataBase;User Id=myUsername;Password=myPassword;MultipleActiveResultSets=True;TrustServerCertificate=True");
 
-          Console.WriteLine("\nPostgreSQL:");
-          Console.WriteLine("Host=myServer;Database=myDataBase;Username=myUsername;Password=myPassword;SSL Mode=Require;Trust Server Certificate=true");
+            Console.WriteLine("\nEnter your connection string:");
+            connectionString = Console.ReadLine();
 
-          Console.WriteLine("\nSQLite:");
-          Console.WriteLine("Data Source=mydatabase.db;");
+            if (string.IsNullOrEmpty(connectionString))
+            {
+              Console.WriteLine("Connection String is required to run the bot.");
+              throw new ArgumentNullException(nameof(connectionString));
+            }
 
-          Console.WriteLine("\nMySQL:");
-          Console.WriteLine("Server=myServerAddress;Database=myDataBase;User=myUsername;Password=myPassword;SslMode=Preferred;");
+            JsonConfigurationHelper.UpdateAppSettings("ConnectionStrings:DiscordBotEntities", connectionString);
+            ReloadConfiguration(); // Reload configuration after updating
+            break;
 
-          Console.WriteLine("\nPlease enter your connection string:");
-          connectionString = Console.ReadLine();
+          case "3":
+            Console.WriteLine("Skipping database configuration. Some features will be disabled.");
+            break;
 
-          if (string.IsNullOrEmpty(connectionString))
-          {
-            Console.WriteLine("Connection String is required to run the bot.");
-            throw new ArgumentNullException(nameof(connectionString));
-          }
-
-          JsonConfigurationHelper.UpdateAppSettings("ConnectionStrings:DiscordBotEntities", connectionString);
-          ReloadConfiguration(); // Reload configuration after updating
-        }
-        else
-        {
-          throw new ArgumentNullException(nameof(connectionString), "Connection String is required to run the bot.");
+          default:
+            Console.WriteLine("Invalid choice. Exiting setup.");
+            throw new ArgumentException("Invalid choice for database configuration.");
         }
       }
+      else if (useSqlLite)
+      {
+        Console.WriteLine("SQLite database is enabled.");
+      }
+      else
+      {
+        Console.WriteLine("Database connection string is already configured.");
+      }
     }
+
+
+
 
 
     private void ReloadConfiguration()

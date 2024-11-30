@@ -1,4 +1,5 @@
 ﻿using Domain.Infrastructure.Context;
+using Domain.Infrastructure.Context.Sqlite.Models;
 using Domain.Models.BusinessLayer;
 
 namespace Domain.Mapping
@@ -57,5 +58,82 @@ namespace Domain.Mapping
       viewModel.Updated = dbModel.Updated;
       return viewModel;
     }
+
+    public static GuildLineup MapToViewModel(SqliteGuildLineup dbModel)
+    {
+      if (dbModel == null) throw new InvalidDataException("Source cannot be null");
+      return new GuildLineup(false)
+      {
+        GUID = dbModel.Guid,
+        GuildId = dbModel.GuildId,
+        Name = dbModel.Name,
+        ValidFor = dbModel.ValidFor,
+        Value = dbModel.Value,
+        Created = dbModel.Created,
+        Updated = dbModel.Updated
+      };
+    }
+
+    public static ServerCommand MapToViewModel(SqliteServerCommand dbModel)
+    {
+      if (dbModel == null) throw new InvalidDataException("Source cannot be null");
+      return new ServerCommand(false)
+      {
+        GUID = dbModel.Guid,
+        GuildId = dbModel.GuildId,
+        Key = dbModel.Key,
+        Value = dbModel.Value,
+        Created = dbModel.Created,
+        Updated = dbModel.Updated
+      };
+    }
+
+    public static SqliteServerCommand MapToEntityFromViewModel(ServerCommand viewModel)
+    {
+      if (viewModel == null) throw new InvalidDataException("Source cannot be null");
+
+      return new SqliteServerCommand
+      {
+        Guid = viewModel.GUID,
+        GuildId = viewModel.GuildId,
+        Key = viewModel.Key,
+        Value = viewModel.Value,
+        Created = viewModel.Created,
+        Updated = viewModel.Updated
+      };
+    }
+    public static SqliteGuildLineup MapToDbModel(GuildLineup viewModel)
+    {
+      if (viewModel == null) throw new InvalidDataException("Source cannot be null");
+      return new SqliteGuildLineup
+      {
+        Guid = viewModel.GUID,
+        GuildId = viewModel.GuildId,
+        Name = viewModel.Name,
+        ValidFor = viewModel.ValidFor,
+        Value = viewModel.Value,
+        Created = viewModel.Created,
+        Updated = viewModel.Updated
+      };
+    }
+    public static SqliteGuildLineup MapToEntityFromViewModel(GuildLineup viewModel)
+    {
+      if (viewModel == null) throw new InvalidDataException("Source cannot be null");
+
+      return new SqliteGuildLineup
+      {
+        Guid = viewModel.GUID,
+        GuildId = viewModel.GuildId,
+        Name = viewModel.Name,
+        ValidFor = viewModel.ValidFor,
+        Value = viewModel.Value,
+        Created = viewModel.Created,
+        Updated = viewModel.Updated
+      };
+    }
+
+ 
+
+
   }
 }
