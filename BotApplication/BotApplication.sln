@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.11.35431.28
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BotApplication", "BotApplication.csproj", "{61B3B7D1-C1B2-46B7-849B-E3A0F6F12F3E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Domain", "..\Domain\Domain.csproj", "{B841CC8B-8B7F-43B4-ABE4-EC06D8D21BC3}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{61B3B7D1-C1B2-46B7-849B-E3A0F6F12F3E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{61B3B7D1-C1B2-46B7-849B-E3A0F6F12F3E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{61B3B7D1-C1B2-46B7-849B-E3A0F6F12F3E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{61B3B7D1-C1B2-46B7-849B-E3A0F6F12F3E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B841CC8B-8B7F-43B4-ABE4-EC06D8D21BC3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B841CC8B-8B7F-43B4-ABE4-EC06D8D21BC3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B841CC8B-8B7F-43B4-ABE4-EC06D8D21BC3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B841CC8B-8B7F-43B4-ABE4-EC06D8D21BC3}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {7CB106FD-2276-4976-87E9-081151E2DD14}
+	EndGlobalSection
+EndGlobal
