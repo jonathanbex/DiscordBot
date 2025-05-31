@@ -5,9 +5,12 @@ BotApplication is the main file application, Domain is shared and DiscordBot is 
 This is a simple Discord bot implemented in C# using the Discord.Net library.
 
 ## Quick Add to server
-1. https://discord.com/oauth2/authorize?client_id=1217025143067381781&permissions=8&integration_type=0&scope=bot
-2. Add to the server you want to use
-3. Use commands
+1. Click Link
+2. ```bash 
+https://discord.com/oauth2/authorize?client_id=1217025143067381781&permissions=8&integration_type=0&scope=bot
+```
+3. Add to the server you want to use
+4. Use commands
 
 # Normal Setup
 1. **Download latest release**
