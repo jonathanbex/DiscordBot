@@ -1,0 +1,26 @@
+- Always make a pull request when you're finished  
+- Keep controllers thin — no business logic if possible  
+- Chain services if needed, but keep each one focused (i.e. one service wraps many services)  
+- Use expressive names — no abbreviations or placeholder variables  
+- Follow DRY, but don’t overabstract  
+- Return `IActionResult` or `Results.Ok()` from controllers  
+- Use `ILogger<T>` or our own `ILoggerAsync` for all logging — never use `Console.WriteLine`  
+  - (Don't worry about replacing existing ones unless touching that code anyway)  
+- Never swallow exceptions — log or throw with context  
+- Use `AsNoTracking()` for read-only queries  
+- Don’t modify migrations unless updating the model  
+- Only run `dotnet ef` commands when explicitly told to  
+- Use C# naming conventions  
+- Keep pull requests small and focused  
+- Don’t comment too much — only comment important things, usually why you chose that path  
+- Don’t use tabs, use 2 spaces (tabs are configured to insert 2 spaces)
+- Keep things obvious — code should explain itself whenever possible  
+- Avoid “clever” code if it makes things harder to read or change later  
+- Favor small methods — if it’s hard to name, it’s probably doing too much  
+- Prefer composition over inheritance unless inheritance clearly simplifies things  
+- If you're unsure about something, write it clearly or leave a `TODO:` with context  
+- Don’t leave commented-out code in commits or PRs  
+- If you fix a bug, consider adding a test or note to prevent regressions  
+- When reviewing code, explain your reasoning — assume the author is smart but rushed  
+- Use `FirstOrDefaultAsync()` and `ToListAsync()` for querying  
+- Never use `FirstAsync()` or `SingleOrDefaultAsync()` — they throw and should be avoided unless failure is truly expected
