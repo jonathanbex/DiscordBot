@@ -14,10 +14,11 @@ namespace BotApplication.Helper
       _configuration = configuration;
     }
 
-    public void ValidateAndUpdateConfiguration()
+    public IConfiguration ValidateAndUpdateConfiguration()
     {
       ValidateAndPromptForToken();
       ValidateAndPromptForConnectionString();
+      return _configuration;
     }
 
     private void ValidateAndPromptForToken()

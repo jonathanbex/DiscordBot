@@ -19,7 +19,7 @@ public class Program
     var configuration = TryGetConfigurationHelper.LoadConfiguration("appsettings.json");
 
     var configurationValidator = new ConfigurationValidator(configuration);
-    configurationValidator.ValidateAndUpdateConfiguration();
+    configuration = configurationValidator.ValidateAndUpdateConfiguration();
 
     // Create a HostBuilder for DI etc.
     var host = Host.CreateDefaultBuilder(args)

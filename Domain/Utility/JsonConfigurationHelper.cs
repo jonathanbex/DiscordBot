@@ -104,6 +104,7 @@ namespace Domain.Utility
         current = current[keys[i]] as IDictionary<string, object>;
       }
 
+      //^1 is last element of array ^2 is second to last etc
       current[keys[^1]] = value;
 #pragma warning restore CS8602 // Dereference of a possibly null reference.
     }
