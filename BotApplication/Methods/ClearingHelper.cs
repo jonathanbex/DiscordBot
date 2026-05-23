@@ -38,37 +38,41 @@ namespace BotApplication.Methods
       }
 
       var parts = command.Split(' ');
-      if (parts.Length > 1 && int.TryParse(parts[1], out var quantity))
+      var quantity = 10;
+      if (parts.Length > 1 && int.TryParse(parts[1], out var parsedQty))
       {
-        if (quantity > 0 && quantity <= 100)
+        quantity = parsedQty;
+      }
+
+      if (quantity > 0 && quantity <= 100)
+      {
+        var messages = await context.Channel.GetMessagesAsync(quantity + 1).FlattenAsync();
+
+        var twoWeeksAgo = DateTimeOffset.UtcNow.AddDays(-14);
+        var recentMessages = messages.Where(m => m.CreatedAt > twoWeeksAgo).ToList();
+
+        var messagesToDelete = recentMessages.Count();
+        var messageChunks = recentMessages.Chunk(100); // Adjust chunk size if necessary
+
+        foreach (var chunk in messageChunks)
         {
-          var messages = await context.Channel.GetMessagesAsync(quantity + 1).FlattenAsync();
-
-          var twoWeeksAgo = DateTimeOffset.UtcNow.AddDays(-14);
-          var recentMessages = messages.Where(m => m.CreatedAt > twoWeeksAgo).ToList();
-
-          var messagesToDelete = recentMessages.Count();
-          var messageChunks = recentMessages.Chunk(100); // Adjust chunk size if necessary
-
-          foreach (var chunk in messageChunks)
-          {
 #pragma warning disable CS8602 // Dereference of a possibly null reference.
-            await (context.Channel as ITextChannel).DeleteMessagesAsync(chunk);
+          await (context.Channel as ITextChannel).DeleteMessagesAsync(chunk);
 #pragma warning restore CS8602 // Dereference of a possibly null reference.
-          }
-
-          var confirmationMessage = await context.Channel.SendMessageAsync($"{messagesToDelete - 1} messages deleted!");
-          await Task.Delay(TimeSpan.FromSeconds(2));
-          await confirmationMessage.DeleteAsync();
         }
-        else
-        {
-          var invalidQuantityMessage = await context.Channel.SendMessageAsync("Please specify a number between 1 and 100.");
 
-          await Task.Delay(TimeSpan.FromSeconds(2));
-          await invalidQuantityMessage.DeleteAsync();
-        }
+        var confirmationMessage = await context.Channel.SendMessageAsync($"{messagesToDelete - 1} messages deleted!");
+        await Task.Delay(TimeSpan.FromSeconds(2));
+        await confirmationMessage.DeleteAsync();
+      }
+      else
+      {
+        var invalidQuantityMessage = await context.Channel.SendMessageAsync("Please specify a number between 1 and 100.");
+
+        await Task.Delay(TimeSpan.FromSeconds(2));
+        await invalidQuantityMessage.DeleteAsync();
       }
     }
+
   }
 }
