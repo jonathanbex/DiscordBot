@@ -21,7 +21,8 @@ namespace BotApplication.Worker
     private RoleHelper _roleHelper;
     private CommandHelper _commandHelper;
     private GuildLineupHelper _guildLineupHelper;
-    public Bot(IConfiguration config,
+    public Bot(DiscordSocketClient client,
+      IConfiguration config,
       TaskQueue taskQueue,
       IServerCommandService serverCommandService,
       ClearingHelper clearingHelper,
@@ -29,10 +30,7 @@ namespace BotApplication.Worker
       CommandHelper commandHelper,
       GuildLineupHelper guildLineupHelper)
     {
-      _client = new DiscordSocketClient(new DiscordSocketConfig
-      {
-        GatewayIntents = GatewayIntents.Guilds | GatewayIntents.GuildMembers | GatewayIntents.MessageContent | GatewayIntents.AllUnprivileged
-      });
+      _client = client;
       _config = config;
       _taskQueue = taskQueue;
       _serverCommandService = serverCommandService;
@@ -74,6 +72,7 @@ namespace BotApplication.Worker
       if (message.Author.IsBot) return;
       if (!message.Content.StartsWith(Prefix, StringComparison.InvariantCultureIgnoreCase)) return;
 
+
       _taskQueue.Enqueue(async () =>
     {
       var context = new SocketCommandContext(_client, message);
@@ -112,6 +111,18 @@ namespace BotApplication.Worker
       {
         await _guildLineupHelper.GetLineup(context, command);
       }
+      else if (command.StartsWith("createEvent", StringComparison.InvariantCultureIgnoreCase))
+      {
+        await _guildLineupHelper.CreateEvent(context, command);
+      }
+      else if (command.StartsWith("addEventMember", StringComparison.InvariantCultureIgnoreCase))
+      {
+        await _guildLineupHelper.AddMemberToEvent(context, command);
+      }
+      else if (command.StartsWith("renderLineup", StringComparison.InvariantCultureIgnoreCase))
+      {
+        await _guildLineupHelper.RenderEvent(context, command);
+      }
       else if (command.StartsWith("jHelp", StringComparison.InvariantCultureIgnoreCase))
       {
         var registeredCommands = await _serverCommandService.ListAllCommands(context.Guild.Id.ToString());
@@ -124,6 +135,9 @@ namespace BotApplication.Worker
             "`!getLineup <name or prompt>` - Returns lineup if exists. I.e !getLineup Raid1 or !getLineup tonight (tonight/today/tommorow are valid).\n" +
             "`!addEditLineup <name> [<Time> (yyyyMMdd HH:mm)]  [<value>] ` - Add or updates the existing lineup I.e !addEditLineup Raid1 [20240815 20:00] [```Tanks: Megatank, smal tank````].\n" +
             "`!removeLineup <name>` - Removes lineup if found. I.e !removeLineup Raid1.\n" +
+            "`!createEvent <name> [yyyyMMdd HH:mm]` - Creates/updates an event for lineup tracking.\n" +
+            "`!addEventMember <name> [member] [role]` - Adds a guild member to the event lineup. role defaults to Member (also supports tank/healer/support/dps/custom).\n" +
+            "`!renderLineup <name>` - Renders event lineup in a friendly format.\n" +
             "`!jHelp` - Returns a list of commands.\n");
         if (registeredCommands != null && registeredCommands.Any())
         {

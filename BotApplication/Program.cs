@@ -2,6 +2,8 @@
 using BotApplication.Methods;
 using BotApplication.Queue;
 using BotApplication.Worker;
+using Discord;
+using Discord.WebSocket;
 using Domain.DependencyInjection;
 using Domain.Infrastructure.Context;
 using Domain.Infrastructure.Repositories.Implementation;
@@ -49,6 +51,11 @@ public class Program
           services.AddScoped<RoleHelper>();
           services.AddScoped<GuildLineupHelper>();
           services.AddSingleton<TaskQueue>();
+          services.AddSingleton(new DiscordSocketClient(new DiscordSocketConfig
+          {
+            GatewayIntents = GatewayIntents.Guilds | GatewayIntents.GuildMembers | GatewayIntents.MessageContent | GatewayIntents.AllUnprivileged
+          }));
+          services.AddHostedService<ScheduledJobService>();
 
 
           services.AddSingleton<Bot>();
@@ -58,6 +65,7 @@ public class Program
         .Build();
 
     // Resolve the Bot service and run it
+    await host.StartAsync();
     var bot = host.Services.GetRequiredService<Bot>();
     await bot.RunAsync();
   }
