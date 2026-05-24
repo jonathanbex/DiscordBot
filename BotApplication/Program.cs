@@ -1,6 +1,7 @@
 ﻿using BotApplication.Helper;
 using BotApplication.Methods;
 using BotApplication.Queue;
+using BotApplication.Services;
 using BotApplication.Worker;
 using Discord;
 using Discord.WebSocket;
@@ -50,6 +51,7 @@ public class Program
           services.AddScoped<CommandHelper>();
           services.AddScoped<RoleHelper>();
           services.AddScoped<GuildLineupHelper>();
+          services.AddSingleton<DiscordInteractionService>();
           services.AddSingleton<TaskQueue>();
           services.AddSingleton(new DiscordSocketClient(new DiscordSocketConfig
           {

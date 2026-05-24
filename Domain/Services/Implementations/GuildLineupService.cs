@@ -9,9 +9,10 @@ namespace Domain.Services.Implementations
 {
   public class GuildLineupService : IGuildLineupService
   {
-    private const string DefaultEventRole = "Member";
+    private const string DefaultEventRole = "Default";
     private const int MaxMembersPerLine = 3;
-    private static readonly string[] EventRoleOrder = ["Tank", "Support", "Healer", "Dps"];
+    private static readonly string[] EventRoleOrder = ["Tank", "Support", "Healer", "Dps", DefaultEventRole];
+    private static readonly string[] DefaultSignupRoles = ["Tank", "Healer", "Dps", "Support", DefaultEventRole];
     private readonly IGuildLineupRepository _guildLineupRepository;
     public GuildLineupService(IGuildLineupRepository guildLineupRepository)
     {
@@ -33,7 +34,7 @@ namespace Domain.Services.Implementations
       return await _guildLineupRepository.AddOrUpdateGuildLineup(lineup);
     }
 
-    public async Task<GuildLineup> AddOrUpdateEvent(string guildId, string eventName, DateTimeOffset eventAt, ulong channelId, DateTimeOffset userCurrentTime)
+    public async Task<GuildLineup> AddOrUpdateEvent(string guildId, string eventName, DateTimeOffset eventAt, ulong channelId, DateTimeOffset userCurrentTime, IEnumerable<string>? signupRoles = null)
     {
       ValidateKeys(guildId, eventName);
       if (eventAt <= userCurrentTime.UtcDateTime) throw new InvalidDataException("Event date is in the past");
@@ -43,6 +44,7 @@ namespace Domain.Services.Implementations
 
       var model = ParseEventPayload(lineup.Value);
       model.ChannelId = channelId;
+      model.SignupRoles = MergeSignupRoles(model.SignupRoles, signupRoles);
       lineup.ValidFor = eventAt.UtcDateTime;
       lineup.Value = JsonSerializer.Serialize(model);
       return await _guildLineupRepository.AddOrUpdateGuildLineup(lineup);
@@ -65,6 +67,40 @@ namespace Domain.Services.Implementations
       lineup.Value = JsonSerializer.Serialize(model);
       lineup.Updated = DateTime.UtcNow;
       return await _guildLineupRepository.AddOrUpdateGuildLineup(lineup);
+    }
+
+    public async Task<GuildLineup> RemoveMemberFromEvent(string guildId, string eventName, string member)
+    {
+      ValidateKeys(guildId, eventName);
+      if (string.IsNullOrWhiteSpace(member)) throw new InvalidDataException("Missing member");
+
+      GuildLineup? lineup = await _guildLineupRepository.GetLineup(guildId, eventName);
+      if (lineup == null) throw new InvalidDataException($"Event '{eventName}' was not found");
+
+      var model = ParseEventPayload(lineup.Value);
+      model.Members.RemoveAll(x => x.Member.Equals(member, StringComparison.OrdinalIgnoreCase));
+
+      lineup.Value = JsonSerializer.Serialize(model);
+      lineup.Updated = DateTime.UtcNow;
+      return await _guildLineupRepository.AddOrUpdateGuildLineup(lineup);
+    }
+
+    public async Task<GuildLineup> AddSignupRolesToEvent(string guildId, string eventName, IEnumerable<string> signupRoles)
+    {
+      ValidateKeys(guildId, eventName);
+      GuildLineup? lineup = await _guildLineupRepository.GetLineup(guildId, eventName);
+      if (lineup == null) throw new InvalidDataException($"Event '{eventName}' was not found");
+
+      var model = ParseEventPayload(lineup.Value);
+      model.SignupRoles = MergeSignupRoles(model.SignupRoles, signupRoles);
+      lineup.Value = JsonSerializer.Serialize(model);
+      lineup.Updated = DateTime.UtcNow;
+      return await _guildLineupRepository.AddOrUpdateGuildLineup(lineup);
+    }
+
+    public IReadOnlyList<string> GetSignupRoles(GuildLineup lineup)
+    {
+      return MergeSignupRoles(ParseEventPayload(lineup.Value).SignupRoles, null);
     }
 
     public async Task<GuildLineup?> GetLineup(string guildId, DateTimeOffset userCurrentTime, string? validFor = null, string? name = null)
@@ -162,8 +198,20 @@ namespace Domain.Services.Implementations
       if (role.Equals("Supports", StringComparison.InvariantCultureIgnoreCase)) return "Support";
       if (role.Equals("Dps", StringComparison.InvariantCultureIgnoreCase)) return "Dps";
       if (role.Equals("Damage", StringComparison.InvariantCultureIgnoreCase)) return "Dps";
+      if (role.Equals("Member", StringComparison.InvariantCultureIgnoreCase)) return DefaultEventRole;
 
       return char.ToUpperInvariant(role[0]) + role[1..];
+    }
+
+    private static List<string> MergeSignupRoles(IEnumerable<string>? currentRoles, IEnumerable<string>? rolesToAdd)
+    {
+      return DefaultSignupRoles
+        .Concat(currentRoles ?? [])
+        .Concat(rolesToAdd ?? [])
+        .Where(role => !string.IsNullOrWhiteSpace(role))
+        .Select(NormalizeEventRole)
+        .Distinct(StringComparer.InvariantCultureIgnoreCase)
+        .ToList();
     }
 
     private static int GetEventRoleOrder(string role)
@@ -205,6 +253,7 @@ namespace Domain.Services.Implementations
     {
       public ulong? ChannelId { get; set; }
       public List<EventLineupMember> Members { get; set; } = new();
+      public List<string> SignupRoles { get; set; } = new();
     }
 
     private sealed class EventLineupMember

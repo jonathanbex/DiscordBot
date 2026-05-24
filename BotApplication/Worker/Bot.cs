@@ -1,5 +1,6 @@
 using BotApplication.Methods;
 using BotApplication.Queue;
+using BotApplication.Services;
 using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
@@ -14,16 +15,20 @@ namespace BotApplication.Worker
     private readonly DiscordSocketClient _client;
     private const string Prefix = "!";
     private readonly IConfiguration _config;
-    private TaskQueue _taskQueue;
-    private IServerCommandService _serverCommandService;
-    private ClearingHelper _clearingHelper;
-    private RoleHelper _roleHelper;
-    private CommandHelper _commandHelper;
-    private GuildLineupHelper _guildLineupHelper;
-    public Bot(DiscordSocketClient client,
+    private readonly TaskQueue _taskQueue;
+    private readonly IServerCommandService _serverCommandService;
+    private readonly DiscordInteractionService _discordInteractionService;
+    private readonly ClearingHelper _clearingHelper;
+    private readonly RoleHelper _roleHelper;
+    private readonly CommandHelper _commandHelper;
+    private readonly GuildLineupHelper _guildLineupHelper;
+
+    public Bot(
+      DiscordSocketClient client,
       IConfiguration config,
       TaskQueue taskQueue,
       IServerCommandService serverCommandService,
+      DiscordInteractionService discordInteractionService,
       ClearingHelper clearingHelper,
       RoleHelper roleHelper,
       CommandHelper commandHelper,
@@ -33,12 +38,18 @@ namespace BotApplication.Worker
       _config = config;
       _taskQueue = taskQueue;
       _serverCommandService = serverCommandService;
+      _discordInteractionService = discordInteractionService;
       _clearingHelper = clearingHelper;
       _roleHelper = roleHelper;
       _commandHelper = commandHelper;
-      _client.Log += Log;
-      _client.MessageReceived += MessageReceivedAsync;
       _guildLineupHelper = guildLineupHelper;
+
+      _client.Log += Log;
+      _client.Ready += _discordInteractionService.RegisterSlashCommands;
+      _client.MessageReceived += MessageReceivedAsync;
+      _client.SlashCommandExecuted += _discordInteractionService.HandleSlashCommand;
+      _client.ButtonExecuted += _discordInteractionService.HandleButton;
+      _client.SelectMenuExecuted += _discordInteractionService.HandleSelectMenu;
     }
 
     public async Task RunAsync()
