@@ -1,12 +1,11 @@
-﻿using BotApplication.Methods;
+using BotApplication.Methods;
 using BotApplication.Queue;
 using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
+using Domain.Services.Implementations;
 using Domain.Services.Interfaces;
-using Domain.Utility;
 using Microsoft.Extensions.Configuration;
-using System.Text;
 
 namespace BotApplication.Worker
 {
@@ -81,7 +80,7 @@ namespace BotApplication.Worker
 
       if (command.StartsWith("hello", StringComparison.InvariantCultureIgnoreCase))
       {
-        await context.Channel.SendMessageAsync("Hello! Im Jbot. Please use !jHelp for more information about what I can do");
+        await context.Channel.SendMessageAsync(BotResponseTextService.Hello());
       }
       else if (command.StartsWith("clear", StringComparison.InvariantCultureIgnoreCase))
       {
@@ -125,41 +124,14 @@ namespace BotApplication.Worker
       }
       else if (command.StartsWith("jHelp", StringComparison.InvariantCultureIgnoreCase))
       {
-        var registeredCommands = await _serverCommandService.ListAllCommands(context.Guild.Id.ToString());
-        var stringBuilder = new StringBuilder("**Available Commands:**\n" +
-            "`!hello` - Greets the user.\n" +
-            "`!clear <x>` - Clears `x` number of messages from the channel.\n" +
-            "`!addRole <role>` - Adds the specified role to a user. For example: `!addRole Fyllhund Guildmaster Member. use [] for space separate roles i.e [Guild Member]`.\n" +
-            "`!addEditCommand <key> [Value]` - Add or updates the existing key for this value to be used later. I.e !addEditcommand GuildInformation [Ensure you have tacos for me].\n" +
-            "`!removeCommand <key>` - Removes command if found. I.e !removeCommand Tacolaco.\n" +
-            "`!getLineup <name or prompt>` - Returns lineup if exists. I.e !getLineup Raid1 or !getLineup tonight (tonight/today/tommorow are valid).\n" +
-            "`!addEditLineup <name> [<Time> (yyyyMMdd HH:mm)]  [<value>] ` - Add or updates the existing lineup I.e !addEditLineup Raid1 [20240815 20:00] [```Tanks: Megatank, smal tank````].\n" +
-            "`!removeLineup <name>` - Removes lineup if found. I.e !removeLineup Raid1.\n" +
-            "`!createEvent <name> [yyyyMMdd HH:mm]` - Creates/updates an event for lineup tracking.\n" +
-            "`!addEventMember <name> [member] [role]` - Adds a guild member to the event lineup. role defaults to Member (also supports tank/healer/support/dps/custom).\n" +
-            "`!renderLineup <name>` - Renders event lineup in a friendly format.\n" +
-            "`!jHelp` - Returns a list of commands.\n");
-        if (registeredCommands != null && registeredCommands.Any())
-        {
-          stringBuilder.AppendLine($"**Custom Commands {registeredCommands.Count()}/100**");
-
-          foreach (var registeredCommand in registeredCommands)
-          {
-            stringBuilder.AppendLine($"`!{registeredCommand.Key}`");
-          }
-          if (registeredCommands.Any())
-          {
-            stringBuilder.AppendLine("**All commands are case insensitive**");
-          }
-        }
-
-        await context.Channel.SendMessageAsync(stringBuilder.ToString());
+        await context.Channel.SendMessageAsync(await BotResponseTextService.Help(_serverCommandService, context.Guild.Id.ToString()));
       }
 
       else
       {
-        var entry = await _serverCommandService.GetCommandValue(context.Guild.Id.ToString(), command);
-        if (entry != null) await context.Channel.SendMessageAsync(entry.Value);
+        var response = await BotResponseTextService.CustomCommandResponse(_serverCommandService, context.Guild.Id.ToString(), command);
+        if (response != null) await context.Channel.SendMessageAsync(response);
+        else await context.Channel.SendMessageAsync(BotResponseTextService.UnknownCommand(command));
       }
 
     });

@@ -1,6 +1,7 @@
-﻿using Discord;
+using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
+using Domain.Services.Implementations;
 
 namespace BotApplication.Methods
 {
@@ -8,7 +9,6 @@ namespace BotApplication.Methods
   {
     public ClearingHelper()
     {
-
     }
     public async Task Clear(SocketCommandContext context, string command)
     {
@@ -32,7 +32,7 @@ namespace BotApplication.Methods
 
       if (!permissions.ManageMessages)
       {
-        await context.User.SendMessageAsync("You are not allowed to do this, you need Manage Messages");
+        await context.User.SendMessageAsync(BotResponseTextService.ManageMessagesDenied);
 
         return;
       }
@@ -61,13 +61,13 @@ namespace BotApplication.Methods
 #pragma warning restore CS8602 // Dereference of a possibly null reference.
         }
 
-        var confirmationMessage = await context.Channel.SendMessageAsync($"{messagesToDelete - 1} messages deleted!");
+        var confirmationMessage = await context.Channel.SendMessageAsync(BotResponseTextService.ClearComplete(messagesToDelete - 1));
         await Task.Delay(TimeSpan.FromSeconds(2));
         await confirmationMessage.DeleteAsync();
       }
       else
       {
-        var invalidQuantityMessage = await context.Channel.SendMessageAsync("Please specify a number between 1 and 100.");
+        var invalidQuantityMessage = await context.Channel.SendMessageAsync(BotResponseTextService.ClearInvalidQuantity());
 
         await Task.Delay(TimeSpan.FromSeconds(2));
         await invalidQuantityMessage.DeleteAsync();

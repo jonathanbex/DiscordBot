@@ -1,6 +1,7 @@
-﻿using Discord;
+using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
+using Domain.Services.Implementations;
 using Domain.Services.Interfaces;
 using Domain.Utility;
 
@@ -9,6 +10,7 @@ namespace BotApplication.Methods
   public class CommandHelper
   {
     IServerCommandService _commandService;
+
     public CommandHelper(IServerCommandService commandService)
     {
       _commandService = commandService;
@@ -35,7 +37,7 @@ namespace BotApplication.Methods
 
       if (!permissions.ManageMessages)
       {
-        await context.User.SendMessageAsync("You are not allowed to do this, you need Manage Messages");
+        await context.User.SendMessageAsync(BotResponseTextService.ManageMessagesDenied);
         return;
       }
       var guildId = context.Guild.Id.ToString();
@@ -49,10 +51,10 @@ namespace BotApplication.Methods
       //only catch notsupported as we throw that if they go over the limit;
       catch (NotSupportedException ex)
       {
-        await context.User.SendMessageAsync($"Error in adding command {key} - {ex.Message}");
+        await context.User.SendMessageAsync(BotResponseTextService.CommandStoreFailed(key, ex.Message));
         throw;
       }
-      var confirmationMessage = await context.Channel.SendMessageAsync($"added command !{key} with message {value}");
+      var confirmationMessage = await context.Channel.SendMessageAsync(BotResponseTextService.CommandStored(key, value));
       await Task.Delay(TimeSpan.FromSeconds(2));
       await confirmationMessage.DeleteAsync();
     }
@@ -78,7 +80,7 @@ namespace BotApplication.Methods
 
       if (!permissions.ManageMessages)
       {
-        await context.User.SendMessageAsync("You are not allowed to do this, you need Manage Messages");
+        await context.User.SendMessageAsync(BotResponseTextService.ManageMessagesDenied);
         return;
       }
       var guildId = context.Guild.Id.ToString();
@@ -88,7 +90,7 @@ namespace BotApplication.Methods
       var model = await _commandService.DeleteCommand(guildId, key);
 
 
-      var confirmationMessage = await context.Channel.SendMessageAsync($"Deleted command !{key}");
+      var confirmationMessage = await context.Channel.SendMessageAsync(BotResponseTextService.CommandDeleted(key));
       await Task.Delay(TimeSpan.FromSeconds(2));
       await confirmationMessage.DeleteAsync();
     }

@@ -1,6 +1,7 @@
-﻿using Discord;
+using Discord;
 using Discord.Commands;
 using Discord.WebSocket;
+using Domain.Services.Implementations;
 using Domain.Services.Interfaces;
 using Domain.Utility;
 
@@ -9,13 +10,11 @@ namespace BotApplication.Methods
   public class GuildLineupHelper
   {
     private readonly IGuildLineupService _guildLineupService;
-    private readonly IServerCommandService _serverCommandService;
     private DateTimeOffset _lastAutoPostSweep = DateTimeOffset.MinValue;
 
-    public GuildLineupHelper(IGuildLineupService guildLineupService, IServerCommandService serverCommandService)
+    public GuildLineupHelper(IGuildLineupService guildLineupService)
     {
       _guildLineupService = guildLineupService;
-      _serverCommandService = serverCommandService;
     }
 
 
@@ -29,7 +28,7 @@ namespace BotApplication.Methods
       var validFor = parts[2];
       var value = parts[3];
       await _guildLineupService.AddOrUpdateLineup(guildId, value, name, userCurrentTime, validFor);
-      var confirmationMessage = await context.Channel.SendMessageAsync($"added !{name} with lineup {value}");
+      var confirmationMessage = await context.Channel.SendMessageAsync(BotResponseTextService.LineupStored(name));
       await Task.Delay(TimeSpan.FromSeconds(2));
       await confirmationMessage.DeleteAsync();
     }
@@ -43,7 +42,7 @@ namespace BotApplication.Methods
       DateTime.TryParseExact(validFor, "yyyyMMdd HH:mm", null, System.Globalization.DateTimeStyles.None, out var parsedDate);
       var eventAt = new DateTimeOffset(parsedDate, context.Message.Timestamp.Offset).ToUniversalTime();
       await _guildLineupService.AddOrUpdateEvent(context.Guild!.Id.ToString(), name, eventAt, context.Channel.Id, context.Message.Timestamp);
-      await context.Channel.SendMessageAsync($"Event `{name}` created for {eventAt:yyyy-MM-dd HH:mm} UTC.");
+      await context.Channel.SendMessageAsync(BotResponseTextService.EventCreated(name, eventAt));
     }
 
     public async Task AddMemberToEvent(SocketCommandContext context, string command)
@@ -57,12 +56,12 @@ namespace BotApplication.Methods
       var guildUser = ResolveGuildUser(context.Guild, guildUserInput);
       if (guildUser == null)
       {
-        await context.Channel.SendMessageAsync($"Could not find guild user `{guildUserInput}`.");
+        await context.Channel.SendMessageAsync(BotResponseTextService.GuildUserNotFound(guildUserInput));
         return;
       }
 
       var lineup = await _guildLineupService.AddMemberToEvent(context.Guild.Id.ToString(), eventName, guildUser.DisplayName, role);
-      await context.Channel.SendMessageAsync($"Added `{guildUser.DisplayName}` to `{lineup.Name}` as `{role}`.");
+      await context.Channel.SendMessageAsync(BotResponseTextService.EventMemberAdded(guildUser.DisplayName, lineup.Name ?? eventName, role));
     }
 
     private static SocketGuildUser? ResolveGuildUser(SocketGuild guild, string input)
@@ -84,7 +83,7 @@ namespace BotApplication.Methods
       var lineup = await _guildLineupService.GetLineup(context.Guild.Id.ToString(), context.Message.Timestamp, null, eventName);
       if (lineup == null)
       {
-        await context.Channel.SendMessageAsync($"No event found for `{eventName}`.");
+        await context.Channel.SendMessageAsync(BotResponseTextService.EventNotFound(eventName));
         return;
       }
       await context.Channel.SendMessageAsync(_guildLineupService.RenderLineup(lineup));
@@ -101,10 +100,12 @@ namespace BotApplication.Methods
       {
         var validForModel = await _guildLineupService.GetLineupForDate(guildId, userCurrentTime, key);
         if (validForModel != null) await context.Channel.SendMessageAsync(GuildLineupFormatter.Format(validForModel));
+        else await context.Channel.SendMessageAsync(BotResponseTextService.LineupNotFound(key));
         return;
       }
       var model = await _guildLineupService.GetLineup(guildId, userCurrentTime, null, key);
       if (model != null) await context.Channel.SendMessageAsync(GuildLineupFormatter.Format(model));
+      else await context.Channel.SendMessageAsync(BotResponseTextService.LineupNotFound(key));
 
     }
 
@@ -115,12 +116,12 @@ namespace BotApplication.Methods
       var parts = StringUtility.SmartSplit(command);
       var key = parts[1];
       await _guildLineupService.DeleteLineup(guildId, key);
-      var confirmationMessage = await context.Channel.SendMessageAsync($"Deleted lineup !{key}");
+      var confirmationMessage = await context.Channel.SendMessageAsync(BotResponseTextService.LineupDeleted(key));
       await Task.Delay(TimeSpan.FromSeconds(2));
       await confirmationMessage.DeleteAsync();
     }
 
-    private static async Task<bool> ValidateManageMessagesPermission(SocketCommandContext context)
+    private async Task<bool> ValidateManageMessagesPermission(SocketCommandContext context)
     {
       if (context.Guild == null || context.User is not SocketGuildUser guildUser) return false;
       var channel = context.Channel as ITextChannel;
@@ -128,7 +129,7 @@ namespace BotApplication.Methods
       var permissions = guildUser.GetPermissions(channel);
       if (!permissions.ManageMessages)
       {
-        await context.User.SendMessageAsync("You are not allowed to do this, you need Manage Messages");
+        await context.User.SendMessageAsync(BotResponseTextService.ManageMessagesDenied);
         return false;
       }
       return true;

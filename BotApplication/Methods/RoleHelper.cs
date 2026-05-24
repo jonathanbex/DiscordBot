@@ -1,13 +1,16 @@
-﻿using Discord.Commands;
+using Discord.Commands;
 using Discord.WebSocket;
 using Discord;
+using Domain.Services.Implementations;
 using Domain.Utility;
 
 namespace BotApplication.Methods
 {
   public class RoleHelper
   {
-    public RoleHelper() { }
+    public RoleHelper()
+    {
+    }
     public async Task AddRoles(SocketCommandContext context, string command)
     {
       // Example: Check if the user has the "Manage Messages" permission
@@ -29,7 +32,7 @@ namespace BotApplication.Methods
 
       if (!permissions.ManageRoles)
       {
-        await context.User.SendMessageAsync("You are not allowed to do this, you need Manage Roles");
+        await context.User.SendMessageAsync(BotResponseTextService.ManageRolesDenied);
         return;
       }
 
@@ -58,7 +61,7 @@ namespace BotApplication.Methods
 
         if (rolesToAdd.Count > 0) await userToEdit.AddRolesAsync(rolesToAdd);
 
-        var addedRoleMessage = await context.Channel.SendMessageAsync($"Added roles to user {user}");
+        var addedRoleMessage = await context.Channel.SendMessageAsync(BotResponseTextService.RolesAdded(user));
 
         await Task.Delay(TimeSpan.FromSeconds(2));
         await addedRoleMessage.DeleteAsync();

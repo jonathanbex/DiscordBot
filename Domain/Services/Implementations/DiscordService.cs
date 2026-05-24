@@ -91,13 +91,13 @@ namespace Domain.Services.Implementations
 			if (response.IsSuccessStatusCode)
 			{
 				// Notify success
-				await SendMessageToChannel(channelId, $"{amount} message(s) cleared successfully.", token);
+				await SendMessageToChannel(channelId, $"Sweep complete. Cleared {amount} message(s).", token);
 			}
 			else
 			{
 				// Handle failure
 				var errorContent = await response.Content.ReadAsStringAsync();
-				await SendMessageToChannel(channelId, $"Failed to clear messages: {errorContent}", token);
+				await SendMessageToChannel(channelId, $"I could not finish the sweep. Discord said: {errorContent}", token);
 			}
 		}
 
@@ -173,7 +173,7 @@ namespace Domain.Services.Implementations
 		{
 			if (interaction.Token == null) return;
 			// Handle what happens when the bot receives an unknown command
-			await SendMessageToChannel(interaction.ChannelId, $"Unknown command: {command}", interaction.Token);
+			await SendMessageToChannel(interaction.ChannelId, $"I don't know `{command}` yet. Try one of the listed bot commands.", interaction.Token);
 		}
 
 		public async Task<bool> IsValidRequest(HttpRequest request)
